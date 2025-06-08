@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .card{
+        @apply bg-white grid shadow-lg rounded-xl p-6 w-[34rem] border-2 border-gray-300;
+    }
+    .titulo{
+        @apply text-xl font-bold mb-2 text-gray-800;
+    }
+    .cuerpo{
+        @apply text-gray-600;
+    }
+}

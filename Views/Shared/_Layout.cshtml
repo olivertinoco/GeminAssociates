@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+</head>
+<body>
+    <div class="p-4">
+        @RenderBody()
+    </div>
+    <input id="hdfRaiz" type="hidden" value="@($"{Context.Request.PathBase}/")" />
+    <script src="~/js/General.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

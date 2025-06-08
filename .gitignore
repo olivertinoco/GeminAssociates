@@ -1,0 +1,90 @@
+## ASP.NET Core (.NET 8) - General
+bin/
+obj/
+out/
+
+## User-specific files
+*.user
+*.userosscache
+*.suo
+
+## Build results
+*.dll
+*.exe
+*.app
+*.pdb
+*.cache
+*.log
+
+## dotnet CLI specific
+.project.lock.json
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## OS-specific files
+# Linux/macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+ehthumbs.db
+Thumbs.db
+*.swp
+*~
+
+## Rider / VS Code / JetBrains
+.vscode/
+.idea/
+*.sln.iml
+
+## ASP.NET Core secrets
+secrets.json
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+**/packages/*
+
+# If using global NuGet cache
+# Comment this out if you want to commit packages (not recommended)
+# ~/.nuget is global package cache
+~/.nuget/
+
+## Logs
+*.log
+logs/
+log/
+
+## Configuration files
+appsettings.*.json
+!appsettings.json     # keep the base config
+
+## Coverage reports
+coverage/
+*.lcov
+
+## Publish outputs
+publish/
+wwwroot/dist/
+wwwroot/node_modules/
+
+## Tailwind frontend (specific)
+Tailwind/node_modules/
+Tailwind/bun.lock
+
+
+## Environment files
+.env
+.env.*
+
+## Temporary files
+*.tmp
+*.temp
+
+## JetBrains Rider (if used)
+.idea/
+*.sln.iml
+

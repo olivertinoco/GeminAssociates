@@ -1,0 +1,31 @@
+﻿
+<div>
+    <div class="bg-white shadow-md rounded-lg p-4 flex justify-center items-center mb-6">
+        <img src='@Url.Content("~/Images/logo/logo.jpeg")' alt="Logo" class="h-16 object-contain" />
+    </div>
+
+    <div class="bg-white w-80 mx-auto mt-8 rounded-lg p-6">
+        <select id="cbo-tipo-doc" class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600">
+            <option value="" disabled selected>Seleccione tipo Documento</option>
+            <option value="1">DNI</option>
+            <option value="2">Carnet Extranjeria</option>
+        </select>
+
+        <input id="txt-usuario" class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Usuario" name="no-autofill-user" autocomplete="off">
+        <p id="error-message-usuario" class="text-red-400 hidden"><span id="spnUsuario"></span></p>
+
+        <input id="txt-clave" class="border border-gray-300 w-full px-3 py-2 mt-4 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="password" placeholder="Clave" autocomplete="new-password" maxlength="20">
+        <p id="error-message-clave" class="text-red-400 hidden">Debe ingresar una Clave</p>
+
+        <button id="btn-submit" class="bg-blue-500 w-full py-2 text-white rounded-md cursor-pointer hover:bg-blue-400 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed">Ingresar</button>
+
+    </div>
+
+</div>
+
+
+@{
+    @section scripts {
+        <script src="~/js/home/index.js"></script>
+    }
+}
