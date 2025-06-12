@@ -6,29 +6,40 @@ window.onload = function () {
 }
 
 function setteosPage() {
-    const btn_submit = document.getElementById("btn-submit");
-    const txt_usuario = document.getElementById("txt-usuario");
+    const btn_submit = document.getElementById("btn-boton");
+    const txt_usuario = document.getElementById("txt-prueba");
     const error_message_usuario = document.getElementById("error-message-usuario");
-    const txt_clave = document.getElementById("txt-clave");
+    const txt_clave = document.getElementById("txt-saludo");
     const error_message_clave = document.getElementById("error-message-clave");
-    const cbo_tipo_doc = document.getElementById("cbo-tipo-doc");
     const spnUsuario = document.getElementById("spnUsuario");
 
-    cbo_tipo_doc.selectedIndex = 0;
-    btn_submit.disabled = true;
+    // txt_usuario.onchange = function(){
+    //     error_message_usuario.classList.add("hidden");
+    //     btn_submit.disabled=false;
+    // }
+    txt_usuario.addEventListener("input", function () {
+        error_message_usuario.classList.add("hidden");
+        btn_submit.disabled = false;
+    });
+
+    txt_clave.addEventListener("input", function () {
+        error_message_clave.classList.add("hidden");
+        btn_submit.disabled = false;
+    });
     
-    cbo_tipo_doc.addEventListener('change', aplicarRestricciones);
+    // txt_clave.onchange = function(){
+    //     error_message_clave.classList.add("hidden");
+    //     btn_submit.disabled=false;
+    // }
 
     btn_submit.onclick = function(event) {
         event.preventDefault();
+        btn_submit.disabled=true;
         let isValidUser = false;
         let isValidClave = false;
 
         if (txt_usuario.value.trim() === '') {
             spnUsuario.innerText = "Debe ingresar un Usuario";
-            error_message_usuario.classList.remove("hidden");
-        } else if(txt_usuario.value.trim().length != 8 && cbo_tipo_doc.value == "1"){
-            spnUsuario.innerText = "Usuario tiene 8 digitos";
             error_message_usuario.classList.remove("hidden");
         } else {
             error_message_usuario.classList.add("hidden");
@@ -45,12 +56,25 @@ function setteosPage() {
         if (isValidUser && isValidClave) {
             const url = hdfRaiz.value + "Home/Datos";
             const formData = new FormData();
-            formData.append("data1", cbo_tipo_doc.value);
-            formData.append("data2", txt_usuario.value.trim());
-            formData.append("data3", txt_clave.value.trim());
+            formData.append("data1", txt_usuario.value.trim());
+            formData.append("data2", txt_clave.value.trim());
             Http.post("Home/DataInicio", function(rpta){
                 if (rpta === "OK") {
                     window.location.href = url;
+                }else{
+                    let mensaje;
+                    switch(rpta){
+                        case "error":
+                            mensaje = "No es un DNI valido";
+                            break;
+                        case "existe":
+                            mensaje = "Ya existe el DNI en los registros";
+                            break;
+                        default:
+                            mensaje = rpta;
+                    }
+                    spnUsuario.innerText = mensaje;
+                    error_message_usuario.classList.remove("hidden");
                 }
             }, formData);
 
@@ -64,11 +88,9 @@ function setteosPage() {
     }
 
     function aplicarRestricciones() {
-        const value = cbo_tipo_doc.value;
+        const value = "1";
         txt_usuario.value = "";
         txt_clave.value = "";
-
-
         if (value === '1') {
             txt_usuario.setAttribute('inputmode', 'numeric');
             txt_usuario.setAttribute('maxlength', '8');
@@ -78,15 +100,9 @@ function setteosPage() {
             txt_usuario.setAttribute('maxlength', '20');
             txt_usuario.removeEventListener('input', onlyNumbersHandler);
         }
-
-        if(cbo_tipo_doc.value != ""){
-            btn_submit.disabled = false;
-        }
-        
         txt_usuario.focus();
     }
 
-    aplicarRestricciones();
 
 
 }
