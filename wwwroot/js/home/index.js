@@ -3,6 +3,11 @@ window.onload = function () {
     setteosPage();
     
 
+    const txt_usuario = document.getElementById("txt-prueba");
+    const txt_clave = document.getElementById("txt-saludo");
+    txt_usuario.value = "varrieta";
+    txt_clave.value = "4321";
+
 }
 
 function setteosPage() {
@@ -77,9 +82,7 @@ function setteosPage() {
                     error_message_usuario.classList.remove("hidden");
                 }
             }, formData);
-
         }
-
     }
 
 
@@ -93,16 +96,13 @@ function setteosPage() {
         txt_clave.value = "";
         if (value === '1') {
             txt_usuario.setAttribute('inputmode', 'numeric');
-            txt_usuario.setAttribute('maxlength', '8');
+            txt_usuario.setAttribute('maxLength', '8');
             txt_usuario.addEventListener('input', onlyNumbersHandler);
         } else {
             txt_usuario.removeAttribute('inputmode');
-            txt_usuario.setAttribute('maxlength', '20');
+            txt_usuario.setAttribute('maxLength', '20');
             txt_usuario.removeEventListener('input', onlyNumbersHandler);
         }
         txt_usuario.focus();
     }
-
-
-
 }

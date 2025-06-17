@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Diagnostics;
 using Serilog;
 
 DotNetEnv.Env.Load();
@@ -16,6 +17,7 @@ Log.Logger = new LoggerConfiguration()
     )
     .WriteTo.File(
         path: archivoLog,
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
         rollingInterval: RollingInterval.Day,
         outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
         retainedFileCountLimit: 7
@@ -32,6 +34,7 @@ builder.Services.AddHttpClient();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// evita que los TempData no almacenen en cookies
 builder.Services.AddSession();
 builder.Services.AddSingleton<ITempDataProvider, SessionStateTempDataProvider>();
 
@@ -41,7 +44,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler();
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "text/html";
+
+            var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+            if (exceptionHandlerPathFeature?.Error != null)
+            {
+                Log.Error(exceptionHandlerPathFeature.Error, "Unhandled exception occurred at {Path}", exceptionHandlerPathFeature.Path);
+            }
+
+            await context.Response.WriteAsync("<h1>Ocurrió un error en el servidor.</h1>");
+        });
+    });
     app.UseHsts();
 }
 

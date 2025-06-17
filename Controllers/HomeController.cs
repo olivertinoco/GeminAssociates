@@ -29,6 +29,7 @@ public class HomeController : Controller
     public IActionResult Datos()
     {
         ViewBag.Rpta = TempData["data"];
+        ViewBag.Cred = TempData["cred"];
         return View();
     }
 
@@ -38,7 +39,7 @@ public class HomeController : Controller
         {
             String rpta = "";
             String[] numero;
-            string[] mensaje = {"existe", "error", "dni no valido"};
+            string[] mensaje = {"existe", "error", "dni no valido", "sin datos"};
             string user = Request.Form["data1"].ToString();
             string clave = Request.Form["data2"].ToString();
             string data = $"{user}|{clave}";
@@ -68,12 +69,14 @@ public class HomeController : Controller
                             return dni;
                         }
                         TempData["data"] = $"{dni}{numero[1]}";
+                        TempData["cred"] = clave;
                         return "OK";
                     }
                     catch (Exception exDni)
                     {
                         _logger.LogError(exDni, "Error al consultar servicio");
                         TempData["data"] = $"1|{numero[0]}{numero[1]}";
+                        TempData["cred"] = clave;
                         return "OK";
                     }
                 }

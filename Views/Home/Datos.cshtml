@@ -1,5 +1,4 @@
-﻿
-<div class="flex justify-center mt-2">
+﻿<div class="flex justify-center mt-2">
   <div class="card">
     <h2 class="titulo">Ficha Seleccionado - Gemin Associates</h2>
     <p class="cuerpo">
@@ -11,36 +10,11 @@
   </div>
 </div>
 
-
-<div class="flex justify-center mt-8">
-  <div class="card">
-    <h2 class="titulo">Documento de identidad</h2>
-    <p class="cuerpo">
-      Tipo documento
-    </p>
-    <p class="cuerpo">
-      <select id="cbo-tipo-doc" class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" disabled >
-          <option value=""></option>
-          <option value="1">DNI</option>
-          <option value="2">Carnet Extranjeria</option>
-      </select>
-    </p>
-    <p class="cuerpo">
-      Nro documento
-    </p>
-    <p class="cuerpo">
-      <input id="txt-usuario" class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="documento" name="no-autofill-user" autocomplete="off" disabled >
-    </p>
-  </div>
-</div>
-
-
 <div class="flex justify-center mt-8">
   <div class="card">
     <h2 class="titulo">Condición de Trabajador</h2>
-    <p class="cuerpo">
-      <select id="cbo-condicion" class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" >
-          <option value="" disabled selected>Seleccione una condición</option>
+    <p class="cuerpo" data-item="1">
+      <select id="cbo-condicion" class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" disabled>
           <option value="1">Nuevo</option>
           <option value="2">Reingreso</option>
       </select>
@@ -50,24 +24,49 @@
 
 <div class="flex justify-center mt-8">
   <div class="card">
+    <h2 class="titulo">Documento de identidad</h2>
+    <p class="cuerpo">
+      Tipo documento <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" disabled data-item="3" data-hlp="3"></select>
+    </p>
+    <p class="cuerpo">
+      Nro documento <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="documento" name="nro-documento" autocomplete="off" disabled data-item="4">
+    </p>
+    <p class="cuerpo mt-4">
+      Fecha de emisión <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="date" placeholder="dd/mm/yyyy" name="nro-documento" inputmode="none" onkeydown="return false" autocomplete="off" data-item="5">
+    </p>
+  </div>
+</div>
+
+
+<div class="flex justify-center mt-8">
+  <div class="card">
     <h2 class="titulo">Datos Personales</h2>
     <p class="cuerpo">
-      Apellido Paterno
+      Apellido Paterno <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <input id="txt-ape-paterno" class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="apellido paterno" name="no-autofill-user" autocomplete="off" >
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="apellido paterno" name="no-autofill-user" autocomplete="off" disabled data-item="6">
     </p>
     <p class="cuerpo mt-2">
-      Apellido Materno
+      Apellido Materno <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <input id="txt-ape-materno" class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="apellido materno" name="no-autofill-user" autocomplete="off" >
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="apellido materno" name="no-autofill-user" autocomplete="off" disabled data-item="7">
     </p>
     <p class="cuerpo mt-2">
-      Nombres
+      Nombres <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <input id="txt-nombres" class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="nombres" name="no-autofill-user" autocomplete="off" >
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="nombres" name="no-autofill-user" autocomplete="off" disabled data-item="8">
     </p>
   </div>
 </div>
@@ -77,62 +76,230 @@
   <div class="card">
     <h2 class="titulo">Proyecto al que postula</h2>
     <p class="cuerpo">
-      Puesto al que está postulando
+      Unidad Operativa <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <select id="cbo-puesto" class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" >
-          <option value="" disabled selected>Seleccione una puesto</option>
-          <option value="1">Pintor</option>
-          <option value="2">Programador</option>
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-hlp="9"></select>
+    </p>
+    <p class="cuerpo">
+      Proyecto <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="11" data-hlp="51"></select>
+    </p>
+    <p class="cuerpo">
+      Puesto <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="12" data-hlp="52"></select>
+    </p>
+    <p class="cuerpo">
+      Comunidad
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 no-req" data-item="10" data-hlp="50"></select>
+    </p>
+  </div>
+</div>
+
+<div class="flex justify-center mt-8">
+  <div class="card">
+    <h2 class="titulo">Dirección actual de Residencia</h2>
+    <p class="cuerpo">
+      Por favor, asegurese que la Dirección coincida exactamente con la que figura en su DNI
+    </p>
+    <p class="cuerpo">
+      <div class="bg-white p-4 mb-6">
+        <img src='@Url.Content("~/Images/logo/dni.jpeg")' alt="dni" class="h-25 object-contain ml-0" />
+    </div>
+    </p>
+    <p class="cuerpo mt-2">
+      Dirección <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo" data-item="14">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="direccion exacta" name="no-autofill-user" autocomplete="off" data-item="13">
+    </p>
+    <p class="cuerpo mt-4">
+      Departamento <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-hlp="201"></select>
+    </p>
+    <p class="cuerpo">
+      Provincia <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-hlp="202"></select>
+    </p>
+    <p class="cuerpo">
+      Distrito <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="16" data-hlp="203"></select>
+    </p>
+  </div>
+</div>
+
+
+<div class="flex justify-center mt-8">
+  <div class="card">
+    <h2 class="titulo">Datos Complementarios</h2>
+    <p class="cuerpo">
+      Genero <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="17">
+        <option value="" disabled selected>Seleccione...</option>
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
       </select>
     </p>
-  </div>
-</div>
-
-
-
-
-
-<div class="flex justify-center mt-8">
-  <div class="card">
-    <h2 class="titulo">Título de la Card</h2>
     <p class="cuerpo">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil facilis, earum in harum sint maxime! Tenetur ab quidem animi doloremque facilis atque quod, sit assumenda officia enim! Ipsa, facere neque?
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum sed rerum repudiandae mollitia? Error quo eaque minima labore dolore corrupti rerum nisi enim vero. Magnam omnis illum reprehenderit in. Distinctio.
+      Fecha de Nacimiento <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="date" placeholder="dd/mm/yyyy" name="complementario" inputmode="none" onkeydown="return false" autocomplete="off" data-item="18">
+    </p>
+    <p class="cuerpo mt-4">
+      Telefono personal <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="numero telefono" name="complementario" autocomplete="off" data-item="19">
+    </p>
+    <p class="cuerpo mt-4">
+      Estado Civil <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="20" data-hlp="20"></select>
+    </p>
+    <p class="cuerpo">
+      Correo Electronico (en minusculas) <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="email" placeholder="abc@prueba.com" name="complementario" autocomplete="off" data-item="21">
     </p>
   </div>
 </div>
 
 
-
-
-
-
 <div class="flex justify-center mt-8">
   <div class="card">
-    <h2 class="titulo">Título de la Card</h2>
+    <h2 class="titulo">Contacto de Emergencia Principal</h2>
     <p class="cuerpo">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil facilis, earum in harum sint maxime! Tenetur ab quidem animi doloremque facilis atque quod, sit assumenda officia enim! Ipsa, facere neque?
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum sed rerum repudiandae mollitia? Error quo eaque minima labore dolore corrupti rerum nisi enim vero. Magnam omnis illum reprehenderit in. Distinctio.
+      Nombres completos
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="nombres completos de contacto" name="emergencia" autocomplete="off" data-item="22">
+    </p>
+    <p class="cuerpo mt-4">
+      Parentesco <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="23" data-hlp="23"></select>
+    </p>
+    <p class="cuerpo">
+      Telefono contacto <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="numero telefono contacto" name="emergencia" autocomplete="off" data-item="24">
     </p>
   </div>
 </div>
 
 
+<div class="flex justify-center mt-8">
+  <div class="card">
+    <h2 class="titulo">Grado Academico y Nivel de Instruccion</h2>
+    <p class="cuerpo">
+      Grado Academico mas alto <br>
+      Si actualmente estas estudiando, considera tu formacion completa anterior <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="25" data-hlp="25"></select>
+    </p>
+     <p class="cuerpo">
+      Experiencia en el puesto <span class="text-red-500">*</span>
+    </p>
+    <div class="flex gap-4">
+      <p class="cuerpo w-1/2">
+      <label>Años en el puesto</label>
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros" type="number" placeholder="Nro años puesto" name="emergencia" autocomplete="off" min="0" max="50" inputmode="numeric" pattern="[0-9]*" data-item="26">
+    </p>
+    <p class="cuerpo w-1/2">
+      <label>Años en mineria</label>
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros" type="number" placeholder="Nro años mineria" name="emergencia" autocomplete="off" min="0" max="50" inputmode="numeric" pattern="[0-9]*"data-item="27">
+    </p>
+    </div>
+  </div>
+</div>
 
 
+<div class="flex justify-center mt-8">
+  <div class="card">
+    <h2 class="titulo">Datos de Pago y Pensión</h2>
+    <p class="cuerpo">
+      Entidad Bancaria <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-hlp="28"></select>
+    </p>
+    <p class="cuerpo">
+      Adjuntar la captura de pantalla de su cuenta Bancaria donde se visualice el número de cuenta y el CCI
+    </p>
+    <p class="cuerpo">
+      <div class="bg-white p-4 mb-6">
+        <img src='@Url.Content("~/Images/logo/banco.jpeg")' alt="banco" class="h-25 object-contain ml-0" />
+    </div>
+    </p>
+    <p class="cuerpo mt-2">
+      cuenta Bancaria <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Nro de cuenta bancaria" name="no-autofill-user" autocomplete="off" >
+    </p>
+    <p class="cuerpo mt-2">
+      cuenta Interbancaria (CCI) <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Numero de cuenta Interbancaria" name="no-autofill-user" autocomplete="off" >
+    </p>
+    <p class="cuerpo mt-4">
+      Sistema de Pensiones <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="31" data-hlp="31"></select>
+    </p>
+  </div>
+</div>
 
+<div class="flex justify-center mt-8">
+  <div class="card">
+    <h2 class="titulo">Informacion Adicional</h2>
+    <p class="cuerpo">
+      <div data-item="32" class="grupoChecks"></div>
+    </p>
+  </div>
+</div>
 
-
-
+<div class="flex justify-center mt-8">
+  <div class="card">
+    <h2 class="titulo">Muchas Gracias</h2>
+    <p class="cuerpo">
+      Por favor comentale al reclutador/a que culminó el formulario.
+    </p>
+    <div class="mt-4 text-left">
+      <button id="bnt-enviar" class="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 inline-block">
+      Enviar
+    </button>
+    </div>
+  </div>
+</div>
 
 <input id="hdfRpta" type="hidden" value="@ViewBag.Rpta" />
 <input id="hdfCred" type="hidden" value="@ViewBag.Cred" />
 
 @{
     @section scripts {
-        <script src="~/js/home/datos.js"></script>
+    <script src="~/js/home/datos.js"></script>
     }
 }
