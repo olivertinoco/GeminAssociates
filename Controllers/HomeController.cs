@@ -1,10 +1,8 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using General.Librerias.AccesoDatos;
 using GeminAssociates.Models;
 using System.Text.Json;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 
 namespace GeminAssociates.Controllers;
 
@@ -29,8 +27,24 @@ public class HomeController : Controller
     public IActionResult Datos()
     {
         ViewBag.Rpta = TempData["data"];
-        ViewBag.Cred = TempData["cred"];
         return View();
+    }
+
+    public string GrabarPostulante()
+    {
+        try
+        {
+            string rpta = "";
+            string data = Request.Form["campos"].ToString();
+            daSQL odaSQL = new daSQL(_configuration, "Cnx");
+            rpta = odaSQL.ejecutarComando("dbo.usp_saveDataPostulante", "@data", data);
+            return rpta;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al guardar la data...");
+            return "error";
+        }
     }
 
     public async Task<string> DataInicio()
@@ -39,7 +53,7 @@ public class HomeController : Controller
         {
             String rpta = "";
             String[] numero;
-            string[] mensaje = {"existe", "error", "dni no valido", "sin datos"};
+            string[] mensaje = { "existe", "error", "dni no valido", "sin datos", "Token" };
             string user = Request.Form["data1"].ToString();
             string clave = Request.Form["data2"].ToString();
             string data = $"{user}|{clave}";
@@ -63,20 +77,22 @@ public class HomeController : Controller
                     string dni;
                     try
                     {
+                        if (numero[0] != clave)
+                        {
+                            return "La clave debe ser igual al nro de DNI";
+                        }
                         dni = await ConsultarDni(numero[0]);
-                        if (mensaje.Contains(dni))
+                        if (mensaje.Any(m => dni.StartsWith(m)))
                         {
                             return dni;
                         }
                         TempData["data"] = $"{dni}{numero[1]}";
-                        TempData["cred"] = clave;
                         return "OK";
                     }
                     catch (Exception exDni)
                     {
                         _logger.LogError(exDni, "Error al consultar servicio");
                         TempData["data"] = $"1|{numero[0]}{numero[1]}";
-                        TempData["cred"] = clave;
                         return "OK";
                     }
                 }
@@ -88,7 +104,7 @@ public class HomeController : Controller
             return "ERROR";
         }
     }
-    
+
     private async Task<string> ConsultarDni(string numero)
     {
         try
@@ -123,12 +139,52 @@ public class HomeController : Controller
             return rpta;
         }
         catch (Exception ex)
-        { 
+        {
             _logger.LogError(ex, "Error in Servicio");
             return $"error de conexión";
         }
-        
+
     }
-    
+
+    public async Task<string> SubirArchivo(string nombreArchivo, int viajeActual, string flgInicio = "0")
+    {
+        string rpta = "";
+        try
+        {
+            string rutaCarpeta = _configuration.GetSection("AppSettings")["RutaArchivos"]
+            ?? throw new InvalidOperationException("RutaArchivos no configurada.");
+            if (flgInicio == "1" && !Directory.Exists(rutaCarpeta))
+            {
+                Directory.CreateDirectory(rutaCarpeta);
+            }
+            string rutaArchivo = Path.Combine(rutaCarpeta, nombreArchivo);
+            if (viajeActual == 1 && System.IO.File.Exists(rutaArchivo))
+            {
+                System.IO.File.Delete(rutaArchivo);
+            }
+            if (Request.Body != null && Request.Body.CanRead)
+            {
+                byte[] buffer = new byte[8192]; // 8 KB por chunk
+                int bytesLeidos;
+                using var fs = new FileStream(rutaArchivo, FileMode.Append, FileAccess.Write, FileShare.None);
+                while ((bytesLeidos = await Request.Body.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fs.WriteAsync(buffer, 0, bytesLeidos);
+                }
+                rpta = "ok";
+            }
+            else
+            {
+                _logger.LogWarning("Request.Body es nulo o no se puede leer.");
+                rpta = "error: cuerpo no válido";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en SubirArchivo");
+            return $"error de conexión";
+        }
+        return rpta;
+    }
 
 }

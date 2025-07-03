@@ -1,4 +1,5 @@
-﻿<div class="flex justify-center mt-2">
+
+<div class="flex justify-center mt-2">
   <div class="card">
     <h2 class="titulo">Ficha Seleccionado - Gemin Associates</h2>
     <p class="cuerpo">
@@ -13,10 +14,11 @@
 <div class="flex justify-center mt-8">
   <div class="card">
     <h2 class="titulo">Condición de Trabajador</h2>
-    <p class="cuerpo" data-item="1">
+    <p class="cuerpo" data-value data-item="1">
       <select id="cbo-condicion" class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" disabled>
           <option value="1">Nuevo</option>
           <option value="2">Reingreso</option>
+          <option value="3">Activo</option>
       </select>
     </p>
   </div>
@@ -45,7 +47,6 @@
     </p>
   </div>
 </div>
-
 
 <div class="flex justify-center mt-8">
   <div class="card">
@@ -113,11 +114,11 @@
         <img src='@Url.Content("~/Images/logo/dni.jpeg")' alt="dni" class="h-25 object-contain ml-0" />
     </div>
     </p>
-    <p class="cuerpo mt-2">
+    <p class="cuerpo mt-2 grupo-direcc" data-value data-item="40">
       Dirección <span class="text-red-500">*</span>
     </p>
-    <p class="cuerpo" data-item="14">
-      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="direccion exacta" name="no-autofill-user" autocomplete="off" data-item="13">
+    <p class="cuerpo grupo-direcc" data-value data-item="14">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 grupo-direcc" type="text" placeholder="direccion exacta" name="no-autofill-user" autocomplete="off" data-item="13">
     </p>
     <p class="cuerpo mt-4">
       Departamento <span class="text-red-500">*</span>
@@ -135,7 +136,7 @@
       Distrito <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="16" data-hlp="203"></select>
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 grupo-direcc" data-item="16" data-hlp="203"></select>
     </p>
   </div>
 </div>
@@ -276,10 +277,40 @@
   <div class="card">
     <h2 class="titulo">Informacion Adicional</h2>
     <p class="cuerpo">
-      <div data-item="32" class="grupoChecks"></div>
+      <div id="grupoEPP"></div>
     </p>
   </div>
 </div>
+
+<div class="flex justify-center m-8">
+  <div class="card w-full">
+    <h2 class="titulo">Carga de Archivos</h2>
+    <p class="cuerpo">Adjuntar tus documentos (PDF o imagen) para revision</p>
+    <!-- component -->
+    <div class="w-full max-h-80 overflow-y-auto p-2 bg-white border border-gray-300 rounded-md shadow-inner ">
+        <div class="container mx-auto h-full flex flex-col justify-center items-center">
+            <div id="images-container" class="grid grid-cols-3 gap-4"></div>
+            <div class="flex w-full justify-center">
+                <div id="multi-upload-button"
+                    class="inline-flex items-center px-4 py-2 bg-gray-600 border border-gray-600 rounded-l font-semibold cursor-pointer text-sm text-white tracking-widest hover:bg-gray-500 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition ">
+                    Click to browse
+                </div>
+                <div class="w-4/12 lg:w-3/12 border border-gray-300 rounded-r-md flex items-center justify-between">
+                    <span id="multi-upload-text" class="p-2"></span>
+                    <button id="multi-upload-delete" class="hidden" >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="fill-current text-red-700 w-3 h-3"
+                            viewBox="0 0 320 512">
+                            <path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <input type="file" id="multi-upload-input" class="hidden" multiple/>
+        </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="flex justify-center mt-8">
   <div class="card">
@@ -288,7 +319,7 @@
       Por favor comentale al reclutador/a que culminó el formulario.
     </p>
     <div class="mt-4 text-left">
-      <button id="bnt-enviar" class="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 inline-block">
+      <button id="bnt-enviar" class="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 inline-block disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition">
       Enviar
     </button>
     </div>
@@ -296,7 +327,6 @@
 </div>
 
 <input id="hdfRpta" type="hidden" value="@ViewBag.Rpta" />
-<input id="hdfCred" type="hidden" value="@ViewBag.Cred" />
 
 @{
     @section scripts {

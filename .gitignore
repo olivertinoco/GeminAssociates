@@ -75,7 +75,6 @@ wwwroot/node_modules/
 Tailwind/node_modules/
 Tailwind/bun.lock
 
-
 ## Environment files
 .env
 .env.*
@@ -88,3 +87,5 @@ Tailwind/bun.lock
 .idea/
 *.sln.iml
 
+# FVM Version Cache
+.fvm/

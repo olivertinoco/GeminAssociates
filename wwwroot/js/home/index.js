@@ -17,11 +17,7 @@ function setteosPage() {
     const txt_clave = document.getElementById("txt-saludo");
     const error_message_clave = document.getElementById("error-message-clave");
     const spnUsuario = document.getElementById("spnUsuario");
-
-    // txt_usuario.onchange = function(){
-    //     error_message_usuario.classList.add("hidden");
-    //     btn_submit.disabled=false;
-    // }
+    
     txt_usuario.addEventListener("input", function () {
         error_message_usuario.classList.add("hidden");
         btn_submit.disabled = false;
@@ -32,11 +28,6 @@ function setteosPage() {
         btn_submit.disabled = false;
     });
     
-    // txt_clave.onchange = function(){
-    //     error_message_clave.classList.add("hidden");
-    //     btn_submit.disabled=false;
-    // }
-
     btn_submit.onclick = function(event) {
         event.preventDefault();
         btn_submit.disabled=true;
@@ -77,6 +68,7 @@ function setteosPage() {
                             break;
                         default:
                             mensaje = rpta;
+                            break;
                     }
                     spnUsuario.innerText = mensaje;
                     error_message_usuario.classList.remove("hidden");
