@@ -392,6 +392,9 @@ function grabacionData() {
     boton.classList.add("pointer-events-none", "opacity-50");
     let results = [];
 
+    probarEnvioFiles();
+    return;
+
     results = [
       validarRequeridos(
         "[data-item]:not(.grupo-epp):not(.grupo-direcc)",
@@ -593,48 +596,76 @@ function subirArchivos() {
       imagesContainer.innerHTML = "";
       imagesContainer.classList.remove(
         "w-full",
-        "grid",
-        "grid-cols-1",
-        "md:grid-cols-3",
+        "max-w-[500px]",
+        "mx-auto",
+        "flex",
+        "flex-col",
         "gap-4",
       );
       imagesContainer.classList.add(
         "w-full",
-        "grid",
-        "grid-cols-1",
-        "md:grid-cols-3",
+        "max-w-[500px]",
+        "mx-auto",
+        "flex",
+        "flex-col",
         "gap-4",
       );
-
       multiUploadDeleteButton.classList.remove("hidden");
       multiUploadDeleteButton.classList.add("z-100", "p-2", "my-auto");
 
-      filesArray.forEach((file) => {
+      filesArray.forEach((file, index) => {
         const reader = new FileReader();
-
         reader.onload = function () {
           const container = document.createElement("div");
           container.classList.add(
-            "w-32",
-            "h-32",
-            "mb-3",
-            "rounded-lg",
-            "overflow-hidden",
+            "w-full",
+            "max-h-64",
+            "overflow-y-auto", //scroll vertical
             "flex",
-            "items-center",
-            "justify-center",
+            "flex-col",
+            "items-stretch",
+            "justify-start",
             "bg-gray-100",
+            "rounded-lg",
             "shadow",
+            "p-2",
+            "gap-2",
+            "mb-3",
           );
+
+          const label = document.createElement("label");
+          label.textContent = `Archivo (${index + 1}):`;
+          label.classList.add("text-sm", "font-semibold", "text-gray-700");
+          container.appendChild(label);
+
+          const select = document.createElement("select");
+          select.classList.add(
+            "w-full",
+            "border",
+            "rounded",
+            "p-1",
+            "text-sm",
+            "bg-white",
+          );
+
+          // Opciones ejemplo
+          const options = ["Opción 1", "Opción 2", "Opción 3"];
+          options.forEach((text, i) => {
+            const option = document.createElement("option");
+            option.value = `opt${i}`;
+            option.textContent = text;
+            select.appendChild(option);
+          });
+          container.appendChild(select);
 
           if (file.type.startsWith("image/")) {
             const img = document.createElement("img");
             img.src = reader.result;
             img.classList.add(
-              "w-16",
-              "h-16",
+              "w-full",
+              "h-auto",
               "object-cover",
-              "rounded-sm",
+              "rounded",
               "border",
             );
             container.appendChild(img);
@@ -642,29 +673,35 @@ function subirArchivos() {
             let embed = document.createElement("embed");
             embed.src = reader.result;
             embed.type = "application/pdf";
-            embed.classList.add(
-              "w-full",
-              "h-full",
-              "object-cover",
-              "border-none",
-            );
+            embed.classList.add("w-full", "h-48", "border", "rounded");
             container.appendChild(embed);
           } else {
-            container.innerText = `Preview No Disponible: ${file.name}`;
-            container.classList.add(
-              "w-20",
-              "h-20",
-              "p-1",
+            const object = document.createElement("object");
+            object.data = reader.result;
+            object.type = file.type || "application/octet-stream";
+            object.classList.add(
+              "w-full",
+              "h-32",
+              "border",
               "rounded",
               "bg-white",
               "shadow",
-              "flex",
-              "justify-center",
-              "items-center",
               "text-sm",
               "text-gray-600",
               "text-center",
             );
+
+            const fallback = document.createElement("p");
+            fallback.textContent = `Preview No Disponible: ${file.name}`;
+            fallback.classList.add(
+              "text-center",
+              "p-2",
+              "text-gray-600",
+              "text-sm",
+            );
+
+            object.appendChild(fallback);
+            container.appendChild(object);
           }
 
           imagesContainer.appendChild(container);
@@ -694,11 +731,10 @@ function subirArchivos() {
     imagesContainer.innerHTML = "";
     imagesContainer.classList.remove(
       "w-full",
-      "grid",
-      "grid-cols-1",
-      "sm:grid-cols-2",
-      "md:grid-cols-3",
-      "lg:grid-cols-4",
+      "max-w-[500px]",
+      "mx-auto",
+      "flex",
+      "flex-col",
       "gap-4",
     );
     multiUploadInput.value = "";

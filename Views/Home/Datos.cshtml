@@ -283,17 +283,17 @@
 </div>
 
 <div class="flex justify-center m-8">
-  <div class="card w-full">
+  <div class="card w-full max-w-[650px] mx-auto">
     <h2 class="titulo">Carga de Archivos</h2>
     <p class="cuerpo">Adjuntar tus documentos (PDF o imagen) para revision</p>
-    <!-- component -->
-    <div class="w-full max-h-80 overflow-y-auto p-2 bg-white border border-gray-300 rounded-md shadow-inner ">
-        <div class="container mx-auto h-full flex flex-col justify-center items-center">
-            <div id="images-container" class="grid grid-cols-3 gap-4"></div>
+    <!-- component upload files-->
+    <div class="w-[600px] h-[420px] mx-auto overflow-y-auto bg-white border border-gray-300 rounded-md shadow-inner">
+        <div class="w-[600px] flex flex-col items-center p-2">
+            <div id="images-container" class="w-full max-w-[500px] mx-auto flex flex-col gap-4"></div>
             <div class="flex w-full justify-center">
                 <div id="multi-upload-button"
                     class="inline-flex items-center px-4 py-2 bg-gray-600 border border-gray-600 rounded-l font-semibold cursor-pointer text-sm text-white tracking-widest hover:bg-gray-500 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition ">
-                    Click to browse
+                    Subir Archivos
                 </div>
                 <div class="w-4/12 lg:w-3/12 border border-gray-300 rounded-r-md flex items-center justify-between">
                     <span id="multi-upload-text" class="p-2"></span>
@@ -308,6 +308,7 @@
             <input type="file" id="multi-upload-input" class="hidden" multiple/>
         </div>
     </div>
+    <!-- component upload files-->
   </div>
 </div>
 
