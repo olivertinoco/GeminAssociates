@@ -81,12 +81,12 @@ public class HomeController : Controller
                         {
                             return "La clave debe ser igual al nro de DNI";
                         }
-                        dni = await ConsultarDni(numero[0]);
+                        dni = await DniCallDataResponse(numero[0]);
                         if (mensaje.Any(m => dni.StartsWith(m)))
                         {
                             return dni;
                         }
-                        TempData["data"] = $"{dni}{numero[1]}";
+                        TempData["data"] = $"2^{dni}{numero[1]}";
                         return "OK";
                     }
                     catch (Exception exDni)
@@ -143,7 +143,44 @@ public class HomeController : Controller
             _logger.LogError(ex, "Error in Servicio");
             return $"error de conexión";
         }
+    }
 
+    private async Task<string> DniCallDataResponse(string numero)
+    {
+        try
+        {
+            string rpta = "";
+            var client = _httpClientFactory.CreateClient();
+            var url = $"https://api-lamb-academic.upeu.edu.pe/resources/api/resources/searchdocument/dni?dni={numero}";
+
+            var response = await client.GetAsync(url);
+            var json = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var persona = JsonSerializer.Deserialize<DniDataResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (persona?.Data != null)
+                {
+                    var d = persona.Data;
+                    rpta = $"1|{d.dni}|{d.ap_paterno}|{d.ap_materno}|{d.nombres}||{d.sexo}|||{d.estadoCivil}||{d.fecha_nacimiento}||||||||||{d.direccion}|{d.ubigeo}|";
+                }
+                else
+                {
+                    rpta = "sin datos";
+                }
+            }
+            else
+            {
+                var error = JsonSerializer.Deserialize<DniDataResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                rpta = $"{error?.Message ?? "error desconocido"}";
+            }
+            return rpta;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in Servicio");
+            return $"error de conexión";
+        }
     }
 
     public async Task<string> SubirArchivo(string nombreArchivo, int viajeActual, string flgInicio = "0")

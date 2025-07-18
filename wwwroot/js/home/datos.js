@@ -585,6 +585,8 @@ function subirArchivos() {
     multiUploadInput.click();
   };
 
+  const objectUrls = [];
+
   multiUploadInput.addEventListener("change", function () {
     if (multiUploadInput.files && multiUploadInput.files.length > 0) {
       const filesArray = Array.from(multiUploadInput.files);
@@ -612,55 +614,65 @@ function subirArchivos() {
       );
       multiUploadDeleteButton.classList.remove("hidden");
       multiUploadDeleteButton.classList.add("z-100", "p-2", "my-auto");
+      const containerList = [];
+
+      filesArray.forEach((file, index) => {
+        const container = document.createElement("div");
+        container.classList.add(
+          "w-full",
+          "max-h-64",
+          "overflow-y-auto", //scroll vertical
+          "flex",
+          "flex-col",
+          "items-stretch",
+          "justify-start",
+          "bg-gray-100",
+          "rounded-lg",
+          "shadow",
+          "p-2",
+          "gap-2",
+          "mb-3",
+        );
+
+        const label = document.createElement("label");
+        label.textContent = `Archivo (${index + 1}):`;
+        label.classList.add("text-sm", "font-semibold", "text-gray-700");
+        container.appendChild(label);
+
+        const select = document.createElement("select");
+        select.classList.add(
+          "w-full",
+          "border",
+          "rounded",
+          "p-1",
+          "text-sm",
+          "bg-white",
+        );
+
+        const options = ["Opción 1", "Opción 2", "Opción 3"];
+        options.forEach((text, i) => {
+          const option = document.createElement("option");
+          option.value = `opt${i}`;
+          option.textContent = text;
+          select.appendChild(option);
+        });
+        container.appendChild(select);
+
+        containerList[index] = container;
+        imagesContainer.appendChild(container);
+      });
 
       filesArray.forEach((file, index) => {
         const reader = new FileReader();
+
         reader.onload = function () {
-          const container = document.createElement("div");
-          container.classList.add(
-            "w-full",
-            "max-h-64",
-            "overflow-y-auto", //scroll vertical
-            "flex",
-            "flex-col",
-            "items-stretch",
-            "justify-start",
-            "bg-gray-100",
-            "rounded-lg",
-            "shadow",
-            "p-2",
-            "gap-2",
-            "mb-3",
-          );
-
-          const label = document.createElement("label");
-          label.textContent = `Archivo (${index + 1}):`;
-          label.classList.add("text-sm", "font-semibold", "text-gray-700");
-          container.appendChild(label);
-
-          const select = document.createElement("select");
-          select.classList.add(
-            "w-full",
-            "border",
-            "rounded",
-            "p-1",
-            "text-sm",
-            "bg-white",
-          );
-
-          // Opciones ejemplo
-          const options = ["Opción 1", "Opción 2", "Opción 3"];
-          options.forEach((text, i) => {
-            const option = document.createElement("option");
-            option.value = `opt${i}`;
-            option.textContent = text;
-            select.appendChild(option);
-          });
-          container.appendChild(select);
+          const container = containerList[index];
+          const url = URL.createObjectURL(file);
+          objectUrls.push(url);
 
           if (file.type.startsWith("image/")) {
             const img = document.createElement("img");
-            img.src = reader.result;
+            img.src = url;
             img.classList.add(
               "w-full",
               "h-auto",
@@ -670,14 +682,34 @@ function subirArchivos() {
             );
             container.appendChild(img);
           } else if (file.type === "application/pdf") {
-            let embed = document.createElement("embed");
-            embed.src = reader.result;
-            embed.type = "application/pdf";
-            embed.classList.add("w-full", "h-48", "border", "rounded");
-            container.appendChild(embed);
+            const pdfName = file.name.toLowerCase();
+            const risky =
+              file.size > 1024 * 1024 * 2 ||
+              pdfName.includes("firma") ||
+              pdfName.includes("plantilla");
+
+            if (risky) {
+              const label = document.createElement("label");
+              label.classList.add(
+                "text-red-600",
+                "text-sm",
+                "text-center",
+                "block",
+                "mt-2",
+              );
+              label.innerText = `No se previsualiza PDF "${file.name}".`;
+              container.appendChild(label);
+            } else {
+              // si no es archivo riesgoso, mostrar el embed normalmente
+              const embed = document.createElement("embed");
+              embed.src = url;
+              embed.type = "application/pdf";
+              embed.classList.add("w-full", "h-48", "border", "rounded");
+              container.appendChild(embed);
+            }
           } else {
             const object = document.createElement("object");
-            object.data = reader.result;
+            object.data = url;
             object.type = file.type || "application/octet-stream";
             object.classList.add(
               "w-full",
@@ -704,9 +736,7 @@ function subirArchivos() {
             container.appendChild(object);
           }
 
-          imagesContainer.appendChild(container);
           loadedFiles++;
-
           if (loadedFiles === totalFiles) {
             bnt_enviar.disabled = false;
             bnt_enviar.classList.remove("cursor-not-allowed", "opacity-50");
@@ -737,6 +767,11 @@ function subirArchivos() {
       "flex-col",
       "gap-4",
     );
+
+    objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    objectUrls.length = 0; // limpiar Arreglo
+
+    // Reset input y botones
     multiUploadInput.value = "";
     multiUploadDisplayText.innerHTML = "";
     multiUploadDeleteButton.classList.add("hidden");
