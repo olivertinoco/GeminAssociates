@@ -1,5 +1,7 @@
 let lsDatos = [];
-var files = [];
+let files = [];
+let originalFiles = [];
+let filesArray = [];
 var fileSize = 0;
 var viajesContador = 0;
 var viajesTotal = 0;
@@ -7,6 +9,8 @@ var filesContador = 0;
 var filesTotal = 0;
 var viajesPaquete = 1024 * 100; // 100kB
 var viajesArchivo = "";
+let varTipoPersona;
+let lsFilesUpload = [];
 
 window.onload = function () {
   seteosIniciales();
@@ -17,15 +21,51 @@ window.onload = function () {
 
 function seteosIniciales() {
   const rpta = hdfRpta.value;
+  if (hdfRpta && hdfRpta.value.trim() == "") {
+    return;
+  }
   const listas = rpta.split("^");
   const nroReg = listas.length;
-  lsDatos = listas[0].split("~");
+  varTipoPersona = listas[0];
+  lsDatos = listas[1].split("~");
 
   const cbo_condicion = document.getElementById("cbo-condicion");
-  cbo_condicion.value = lsDatos[0].split("|").length < 6 ? "1" : "2";
+  cbo_condicion.value = varTipoPersona;
+
+  if (varTipoPersona === "2") {
+    const lsData = lsDatos[0].split("|").map((el, item) => {
+      switch (item) {
+        case 6:
+          return el.slice(0, 1);
+        case 9:
+          switch (el) {
+            case "CASADO":
+              return "CA";
+            case "CONVIVIENTE":
+              return "CO";
+            case "DIVORCIADO":
+              return "DI";
+            case "SOLTERO":
+              return "SO";
+            case "VIUDO":
+              return "VI";
+            default:
+              return "";
+          }
+        case 11:
+          const [dia, mes, anio] = el.split("/");
+          return `${anio}-${mes}-${dia}`;
+        default:
+          return el;
+      }
+    });
+    var lsDataIni = lsData.join("|");
+    lsDatos.shift();
+    lsDatos.unshift(lsDataIni);
+  }
 
   const result = [];
-  for (let i = 1; i < nroReg; i++) {
+  for (let i = 2; i < nroReg; i++) {
     const [help, ...datos] = listas[i].split("~");
     const hlp = help.split("|");
     if (hlp[0] === "0") {
@@ -196,6 +236,10 @@ function seteosIniciales() {
     creandoChecksEPP(lsEppCheck);
   }
 
+  const { datos: lsFile = [] } =
+    result.find((item) => item.cab === "300") || {};
+  lsFilesUpload = Array.from(lsFile);
+
   document.querySelectorAll("input.uppercase").forEach((el) => {
     el.addEventListener("input", () => {
       el.value = el.value.toUpperCase();
@@ -301,13 +345,17 @@ function asignarValores() {
       const valor = (lsData?.[index] ?? "").trim();
       if (el instanceof HTMLElement) {
         if (TAGS_VALIDOS.includes(el.tagName)) {
-          el.setAttribute("data-valor", valor);
+          const elValor = varTipoPersona === "2" ? "" : valor;
+          el.setAttribute("data-valor", elValor);
           el.maxLength = parseInt(len) || 0;
           el.required = !el.classList.contains("no-req");
           pos === "16" && asignarUbigeo(valor);
         }
         el.setAttribute("data-campo", campo);
         setValue(el, valor);
+        if (varTipoPersona === "1") {
+          el.setAttribute("disabled", "");
+        }
       } else {
         if (valor != "") {
           lsEpp = valor.split("¯");
@@ -315,6 +363,10 @@ function asignarValores() {
         }
       }
     });
+    if (varTipoPersona === "1") {
+      let bntEnviar = document.getElementById("bnt-enviar");
+      bntEnviar.style.display = "none";
+    }
   }
 }
 
@@ -367,6 +419,9 @@ function asignarEpps(lsEpp) {
       elSec.dataset.value = eppSec;
       elTalla.value = eppTalla;
       elTalla.dataset.valor = eppTalla;
+      if (varTipoPersona === "1") {
+        elTalla.setAttribute("disabled", "");
+      }
     });
   }
   const elPosId = document.querySelector('[data-item="1"]');
@@ -383,7 +438,7 @@ function grabacionData() {
   const bnt_enviar = document.getElementById("bnt-enviar");
   const cbo_condicion = document.getElementById("cbo-condicion");
   const dni = document.querySelector('[data-item="4"]');
-  const postulante = cbo_condicion.value == "1" ? dni.value : "";
+  const postulante = cbo_condicion.value == "2" ? dni.value : "";
 
   bnt_enviar.addEventListener("click", (e) => {
     const boton = e.target;
@@ -434,10 +489,11 @@ function grabacionData() {
         lsMeta.push(`${grupo}.${campo}`);
       }
     });
-    const elNuevo = document.getElementById("cbo-condicion");
-    if (elNuevo.value === "1") {
-      insertaDeshabilitados(lsData, lsMeta);
-    }
+
+    // const elNuevo = document.getElementById("cbo-condicion");
+    // if (elNuevo.value === "1") {
+    //   insertaDeshabilitados(lsData, lsMeta);
+    // }
 
     if (postulante != "") {
       lsData.push(postulante);
@@ -587,9 +643,14 @@ function subirArchivos() {
 
   const objectUrls = [];
 
-  multiUploadInput.addEventListener("change", function () {
+  multiUploadInput.addEventListener("change", function (e) {
     if (multiUploadInput.files && multiUploadInput.files.length > 0) {
-      const filesArray = Array.from(multiUploadInput.files);
+      // files = Array.from(multiUploadInput.files);
+      // const filesArray = [...files];
+      originalFiles = Array.from(e.target.files);
+      files = [...originalFiles];
+      filesArray = [...originalFiles];
+
       const totalFiles = filesArray.length;
       let loadedFiles = 0;
 
@@ -615,6 +676,10 @@ function subirArchivos() {
       multiUploadDeleteButton.classList.remove("hidden");
       multiUploadDeleteButton.classList.add("z-100", "p-2", "my-auto");
       const containerList = [];
+
+      const selects = [];
+      const selectedValues = new Map();
+      const dni = document.querySelector('[data-item="4"]');
 
       filesArray.forEach((file, index) => {
         const container = document.createElement("div");
@@ -647,17 +712,79 @@ function subirArchivos() {
           "p-1",
           "text-sm",
           "bg-white",
+          "uploadFiles",
         );
 
-        const options = ["Opción 1", "Opción 2", "Opción 3"];
-        options.forEach((text, i) => {
-          const option = document.createElement("option");
-          option.value = `opt${i}`;
-          option.textContent = text;
-          select.appendChild(option);
-        });
-        container.appendChild(select);
+        const optionsMap = new Map();
 
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "SELECCIONE TIPO DOC...";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        select.appendChild(defaultOption);
+
+        lsFilesUpload.forEach((item) => {
+          const [valor, text, dato] = item.split("|");
+          const option = document.createElement("option");
+          option.value = valor;
+          option.textContent = text;
+          option.dataset.valor = dato;
+          select.appendChild(option);
+          optionsMap.set(valor, option);
+        });
+
+        // NOTA: VALIDACIONES DE COMBOS NO DUPLICADOS EN SU DATA
+        // =======================================================
+        selects.push({ select, optionsMap });
+
+        select.addEventListener("change", (event) => {
+          const currentSelect = event.target;
+          const newValue = currentSelect.value;
+          const prevValue = selectedValues.get(currentSelect);
+          const selectedOption = currentSelect.selectedOptions[0];
+
+          selectedValues.set(currentSelect, newValue);
+          const index = selects.findIndex(
+            ({ select }) => select === currentSelect,
+          );
+
+          if (
+            selectedOption &&
+            selectedOption.dataset.valor &&
+            originalFiles[index]
+          ) {
+            const originalFile = originalFiles[index];
+            const newFileName =
+              dni.value.trim() + "-" + selectedOption.dataset.valor;
+            // Crear un nuevo archivo con el nuevo nombre
+            const renamedFile = new File([originalFile], newFileName, {
+              type: originalFile.type,
+            });
+            files[index] = renamedFile;
+            filesArray[index] = renamedFile;
+
+            console.log("Archivo renombrado:", renamedFile.name);
+          }
+
+          if (prevValue) {
+            selects.forEach(({ select: otherSelect, optionsMap }) => {
+              if (otherSelect !== currentSelect && optionsMap.has(prevValue)) {
+                optionsMap.get(prevValue).disabled = false;
+              }
+            });
+          }
+
+          if (newValue) {
+            selects.forEach(({ select: otherSelect, optionsMap }) => {
+              if (otherSelect !== currentSelect && optionsMap.has(newValue)) {
+                optionsMap.get(newValue).disabled = true;
+              }
+            });
+          }
+        });
+
+        container.appendChild(select);
         containerList[index] = container;
         imagesContainer.appendChild(container);
       });
@@ -771,7 +898,6 @@ function subirArchivos() {
     objectUrls.forEach((url) => URL.revokeObjectURL(url));
     objectUrls.length = 0; // limpiar Arreglo
 
-    // Reset input y botones
     multiUploadInput.value = "";
     multiUploadDisplayText.innerHTML = "";
     multiUploadDeleteButton.classList.add("hidden");
@@ -780,7 +906,6 @@ function subirArchivos() {
 }
 
 function probarEnvioFiles() {
-  const multiUploadInput = document.getElementById("multi-upload-input");
   const multiUploadDeleteButton = document.getElementById(
     "multi-upload-delete",
   );
@@ -793,11 +918,14 @@ function probarEnvioFiles() {
     filesTotal = files.length;
   };
   const iniciarFile = () => {
-    fileSize = files[filesContador].size;
+    const currentFile = files[filesContador];
+    fileSize = currentFile.size;
     viajesContador = 0;
     viajesTotal = Math.floor(fileSize / viajesPaquete);
     if (fileSize % viajesPaquete > 0) viajesTotal++;
-    viajesArchivo = files[filesContador].name;
+
+    viajesArchivo = currentFile.name;
+    console.log("iniciarFiles = Enviando archivo:", viajesArchivo);
   };
   const enviarFiles = () => {
     var inicio = viajesContador * viajesPaquete;
@@ -833,12 +961,22 @@ function probarEnvioFiles() {
       }
     }
   };
+  const validaSeleccionados = () => {
+    const select = document.querySelectorAll(".uploadFiles");
+    const filtrados = Array.from(select).filter((el) => el.value === "");
+    return filtrados.length;
+  };
 
-  files = multiUploadInput.files;
-  if (files.length === 0) {
+  const longitud = validaSeleccionados();
+  console.log(longitud);
+
+  if (!files || files.length === 0) {
     alert("No hay archivos para enviar.");
     bnt_enviar.disabled = false;
     bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
+    // }
+    // else if (validaSeleccionados > 0) {
+    //   alert("Existen Archivos sin Asignar Nombre.");
   } else {
     iniciarVariablesViajesFiles();
     iniciarFile();

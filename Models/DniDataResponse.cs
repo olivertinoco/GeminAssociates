@@ -1,35 +1,49 @@
+using System.Text.Json.Serialization;
+
 namespace GeminAssociates.Models;
 
 public class DniDataResponse
 {
-    public DniData Data { get; set; }
-    public string Message { get; set; }
-    public int Status { get; set; }
-    public bool Success { get; set; }
+    [JsonPropertyName("data")]
+    public DniData? Data { get; set; }
+
+    [JsonPropertyName("message")]
+    public string? Message { get; set; }
+
+    [JsonPropertyName("status")]
+    public int? Status { get; set; }
+
+    [JsonPropertyName("success")]
+    public bool? Success { get; set; }
 }
 
 public class DniData
 {
-    public string? Foto { get; set; }
-    public string? Madre { get; set; }
-    public string? Padre { get; set; }
-    public string? Restriccion { get; set; }
-    public int? Server { get; set; }
-    public string? ApCasada { get; set; }
-    public string? ApMaterno { get; set; }
-    public string? ApPaterno { get; set; }
-    public int? Count { get; set; }
-    public string? Direccion { get; set; }
-    public string? Dni { get; set; }
-    public string? EstadoCivil { get; set; }
-    public string? FechaEmision { get; set; }
-    public string? FechaNacimiento { get; set; }
-    public string? LugarNaci { get; set; }
-    public string? NombreCompleto { get; set; }
-    public string? Nombres { get; set; }
-    public string? Sexo { get; set; }
-    public string? Ubigeo { get; set; }
-    public string? UbigeoNaci { get; set; }
-    public string? Ubigeotext { get; set; }
-    public int? Verificador { get; set; }
+    [JsonPropertyName("Foto")] public string? Foto { get; set; }
+    [JsonPropertyName("Madre")] public string? Madre { get; set; }
+    [JsonPropertyName("Padre")] public string? Padre { get; set; }
+    [JsonPropertyName("Restriccion")] public string? Restriccion { get; set; }
+    [JsonPropertyName("Server")] public int? Server { get; set; }
+
+    [JsonPropertyName("ap_casada")] public string? ApCasada { get; set; }
+    [JsonPropertyName("ap_materno")] public string? ApMaterno { get; set; }
+    [JsonPropertyName("ap_paterno")] public string? ApPaterno { get; set; }
+
+    [JsonPropertyName("count")] public int? Count { get; set; }
+    [JsonPropertyName("direccion")] public string? Direccion { get; set; }
+    [JsonPropertyName("dni")] public string? Dni { get; set; }
+
+    [JsonPropertyName("estadoCivil")] public string? EstadoCivil { get; set; }
+    [JsonPropertyName("fecha_emision")] public string? FechaEmision { get; set; }
+    [JsonPropertyName("fecha_nacimiento")] public string? FechaNacimiento { get; set; }
+    [JsonPropertyName("lugar_naci")] public string? LugarNaci { get; set; }
+    [JsonPropertyName("nombre_completo")] public string? NombreCompleto { get; set; }
+    [JsonPropertyName("nombres")] public string? Nombres { get; set; }
+    [JsonPropertyName("sexo")] public string? Sexo { get; set; }
+
+    [JsonPropertyName("ubigeo")] public string? Ubigeo { get; set; }
+    [JsonPropertyName("ubigeo_naci")] public string? UbigeoNaci { get; set; }
+    [JsonPropertyName("ubigeotext")] public string? Ubigeotext { get; set; }
+
+    [JsonPropertyName("verificador")] public int? Verificador { get; set; }
 }
