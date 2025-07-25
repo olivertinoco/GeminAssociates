@@ -30,7 +30,7 @@ public class HomeController : Controller
         return View();
     }
 
-    public string GrabarPostulante()
+    public string GrabarPostulanteUnicaVez()
     {
         try
         {
@@ -162,7 +162,7 @@ public class HomeController : Controller
                 if (persona?.Data != null)
                 {
                     var d = persona.Data;
-                    rpta = $"1|{d.Dni}|{d.ApPaterno}|{d.ApMaterno}|{d.Nombres}||{d.Sexo}|||{d.EstadoCivil}||{d.FechaNacimiento}||||||||||{d.Direccion}|{d.Ubigeo}|";
+                    rpta = $"1|{d.Dni}|{d.ApPaterno}|{d.ApMaterno}|{d.Nombres}||{d.Sexo}|||{d.EstadoCivil}||{d.FechaNacimiento}||||||||||||{d.Direccion}|{d.Ubigeo}|";
                 }
                 else
                 {
@@ -183,7 +183,7 @@ public class HomeController : Controller
         }
     }
 
-    public async Task<string> SubirArchivo(string nombreArchivo, int viajeActual, string flgInicio = "0")
+    public async Task<string> SubirArc2299(string nombreArchivo, int viajeActual, string flgInicio = "0")
     {
         string rpta = "";
         try
@@ -219,7 +219,69 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error en SubirArchivo");
-            return $"error de conexión";
+            return "error de conexión";
+        }
+        return rpta;
+    }
+
+    [HttpPost]
+    public async Task<string> SubirArchivo()
+    {
+        string rpta = "";
+        try
+        {
+            var form = await Request.ReadFormAsync();
+            var chunk = form.Files.GetFile("chunk");
+            String cadena = form["cadena"].ToString() ?? "";
+            var nombreCarpeta = form["nombreCarpeta"].ToString() ?? "";
+            var nombreArchivo = form["nombreArchivo"].ToString() ?? "";
+            int viajeActual = 0;
+            int.TryParse(form["viajeActual"], out viajeActual);
+            var flgInicio = form["flgInicio"].ToString() ?? "0";
+
+            if(cadena != ""){
+                try
+                {
+                    daSQL odaSQL = new daSQL(_configuration, "Cnx");
+                    rpta = odaSQL.ejecutarComando("dbo.usp_saveDataPostulante", "@data", cadena);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error sp al guardar la data...");
+                    rpta = "error";
+                }
+            }
+
+            string rutaCarpeta = _configuration.GetSection("AppSettings")["RutaArchivos"]
+                ?? throw new InvalidOperationException("RutaArchivos no configurada.");
+
+            rutaCarpeta = System.IO.Path.Combine(rutaCarpeta, nombreCarpeta);
+            if (flgInicio == "1" && !Directory.Exists(rutaCarpeta))
+            {
+                Directory.CreateDirectory(rutaCarpeta);
+            }
+            string rutaArchivo = System.IO.Path.Combine(rutaCarpeta, nombreArchivo);
+            if (viajeActual == 1 && System.IO.File.Exists(rutaArchivo))
+            {
+                System.IO.File.Delete(rutaArchivo);
+            }
+            if (chunk != null && chunk.Length > 0)
+            {
+                using var fs = new FileStream(rutaArchivo, FileMode.Append, FileAccess.Write, FileShare.None);
+                using var input = chunk.OpenReadStream();
+                await input.CopyToAsync(fs);
+                rpta = "ok";
+            }
+            else
+            {
+                _logger.LogWarning("chunk es nulo o está vacío.");
+                rpta = "error: archivo no válido";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en SubirArchivo");
+            rpta = "error de conexión";
         }
         return rpta;
     }

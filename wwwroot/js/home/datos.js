@@ -9,8 +9,10 @@ var filesContador = 0;
 var filesTotal = 0;
 var viajesPaquete = 1024 * 100; // 100kB
 var viajesArchivo = "";
+var nombreCarpeta = "";
 let varTipoPersona;
 let lsFilesUpload = [];
+let objUbigeos = {};
 
 window.onload = function () {
   seteosIniciales();
@@ -64,11 +66,22 @@ function seteosIniciales() {
     lsDatos.unshift(lsDataIni);
   }
 
+  const modificarUbigeos = (datos) => {
+    const nroReg = datos.length;
+    for (let i = 0; i < nroReg; i++) {
+      const [ubiCodigo, ubiReniec, dep, prov, dis] = datos[i].split("|");
+      const ubigeo = varTipoPersona === "2" ? ubiReniec : ubiCodigo;
+      objUbigeos[ubiReniec] = ubiCodigo;
+      datos[i] = [ubigeo, dep, prov, dis].join("|");
+    }
+  };
+
   const result = [];
   for (let i = 2; i < nroReg; i++) {
     const [help, ...datos] = listas[i].split("~");
     const hlp = help.split("|");
     if (hlp[0] === "0") {
+      hlp[1] === "201202203" && modificarUbigeos(datos);
       result.push({
         cab: hlp[1],
         datos: datos,
@@ -363,9 +376,38 @@ function asignarValores() {
         }
       }
     });
+
     if (varTipoPersona === "1") {
       let bntEnviar = document.getElementById("bnt-enviar");
       bntEnviar.style.display = "none";
+      let divSubirArchivos = document.getElementById("divSubirArchivos");
+      divSubirArchivos.style.display = "none";
+    }
+
+    const elUnidad = document.querySelector('[data-hlp="9"]');
+    const elProyecto = document.querySelector('[data-hlp="51"]');
+    const elPuestos = document.querySelector('[data-hlp="52"]');
+    const elDist = document.querySelector('[data-hlp="203"]');
+    elDist.addEventListener("change", (e) => {
+      const valor = elDist.value;
+      if (varTipoPersona === "2" && valor !== "") {
+        elDist.dataset.aux = objUbigeos[valor] ?? "";
+      }
+    });
+
+    if (elDist.value !== "") {
+      elDist.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (elUnidad.value !== "") {
+      elUnidad.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (elProyecto.dataset.valor !== "") {
+      elProyecto.value = elProyecto.dataset.valor;
+      elProyecto.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (elPuestos.dataset.valor !== "") {
+      elPuestos.value = elPuestos.dataset.valor;
+      elPuestos.dispatchEvent(new Event("change", { bubbles: true }));
     }
   }
 }
@@ -441,14 +483,10 @@ function grabacionData() {
   const postulante = cbo_condicion.value == "2" ? dni.value : "";
 
   bnt_enviar.addEventListener("click", (e) => {
-    const boton = e.target;
     e.preventDefault();
-    boton.disabled = true;
-    boton.classList.add("pointer-events-none", "opacity-50");
+    bnt_enviar.disabled = true;
+    bnt_enviar.classList.add("pointer-events-none", "opacity-50");
     let results = [];
-
-    probarEnvioFiles();
-    return;
 
     results = [
       validarRequeridos(
@@ -461,7 +499,8 @@ function grabacionData() {
 
     const invalidos = results.find((r) => !r.valido);
     if (invalidos) {
-      boton.disabled = false;
+      bnt_enviar.disabled = false;
+      bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
       alert(`Existen campos requeridos en el grupo: ${invalidos.grupo}`);
       invalidos.primerInvalido?.focus();
       return;
@@ -477,12 +516,18 @@ function grabacionData() {
     const lsData = [];
     const lsMeta = [];
 
+    const elDist = document.querySelector('[data-hlp="203"]');
     datosFinales.forEach((item) => {
       const valido = grupos.some((grupo) => item.startsWith(grupo));
       if (valido) {
-        const [, campo, valor] = item.split("|");
-        lsData.push(valor);
-        lsMeta.push(`1.${campo}`);
+        let [, campo, valor] = item.split("|");
+        if (varTipoPersona === "2" && campo === "2.9") {
+          valor = elDist.dataset.aux;
+        }
+        if (campo !== "0.0") {
+          lsData.push(valor);
+          lsMeta.push(`1.${campo}`);
+        }
       } else {
         const [, grupo, campo, , valor2] = item.split("|");
         lsData.push(valor2);
@@ -490,37 +535,29 @@ function grabacionData() {
       }
     });
 
-    // const elNuevo = document.getElementById("cbo-condicion");
-    // if (elNuevo.value === "1") {
-    //   insertaDeshabilitados(lsData, lsMeta);
-    // }
-
     if (postulante != "") {
       lsData.push(postulante);
       lsMeta.push("1.4.4");
     }
 
     const salida = lsData.join("|") + "|" + lsMeta.join("|");
-
-    // probarEnvioFiles();
-
-    const formData = new FormData();
-    formData.append("campos", salida);
-    Http.post(
-      "Home/GrabarPostulante",
-      function (rpta) {
-        if (rpta === "ok") {
-          alert("Exito, se envio el formulario ...");
-        } else {
-          alert("ERROR... no se pudo enviar la informacion...");
-        }
-      },
-      formData,
-    );
-
     console.log(salida);
 
-    boton.disabled = false;
+    probarEnvioFiles(salida);
+
+    // const formData = new FormData();
+    // formData.append("campos", salida);
+    // Http.post(
+    //   "Home/GrabarPostulante",
+    //   function (rpta) {
+    //     if (rpta === "ok") {
+    //       alert("Exito, se envio el formulario ...");
+    //     } else {
+    //       alert("ERROR... no se pudo enviar la informacion...");
+    //     }
+    //   },
+    //   formData,
+    // );
   });
 }
 
@@ -763,8 +800,6 @@ function subirArchivos() {
             });
             files[index] = renamedFile;
             filesArray[index] = renamedFile;
-
-            console.log("Archivo renombrado:", renamedFile.name);
           }
 
           if (prevValue) {
@@ -905,11 +940,14 @@ function subirArchivos() {
   });
 }
 
-function probarEnvioFiles() {
+function probarEnvioFiles(data) {
+  let viajeCadena = 0;
   const multiUploadDeleteButton = document.getElementById(
     "multi-upload-delete",
   );
   const bnt_enviar = document.getElementById("bnt-enviar");
+  const elDocumento = document.querySelector('[data-item="4"]');
+  nombreCarpeta = elDocumento.value;
 
   const iniciarVariablesViajesFiles = () => {
     viajesContador = 0;
@@ -917,31 +955,51 @@ function probarEnvioFiles() {
     filesContador = 0;
     filesTotal = files.length;
   };
+
   const iniciarFile = () => {
     const currentFile = files[filesContador];
     fileSize = currentFile.size;
     viajesContador = 0;
     viajesTotal = Math.floor(fileSize / viajesPaquete);
     if (fileSize % viajesPaquete > 0) viajesTotal++;
-
     viajesArchivo = currentFile.name;
-    console.log("iniciarFiles = Enviando archivo:", viajesArchivo);
   };
-  const enviarFiles = () => {
+
+  const enviarFiles = async () => {
     var inicio = viajesContador * viajesPaquete;
     var fin = inicio + viajesPaquete;
     var file = files[filesContador];
     var blob = file.slice(inicio, fin);
     var flag = filesContador == 0 && viajesContador == 0 ? "1" : "0";
-    var url =
-      "Home/SubirArchivo?nombreArchivo=" +
-      viajesArchivo +
-      "&viajeActual=" +
-      (viajesContador + 1) +
-      "&flgInicio=" +
-      flag;
-    Http.post(url, mostrarRptSubirArchivo, blob);
+    var cadena = viajeCadena == 0 ? data : "";
+    viajeCadena = 1;
+
+    const formData = new FormData();
+    formData.append("chunk", blob);
+    formData.append("cadena", cadena);
+    formData.append("nombreCarpeta", nombreCarpeta);
+    formData.append("nombreArchivo", viajesArchivo);
+    formData.append("viajeActual", viajesContador + 1);
+    formData.append("flgInicio", flag);
+
+    const url = hdfRaiz.value + "Home/SubirArchivo";
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud ${response.status}`);
+      }
+      const rpta = await response.text();
+      mostrarRptSubirArchivo(rpta === "ok");
+    } catch (error) {
+      console.error("Error al subir el archivo:", error);
+      alert("Error en la carga del archivo.");
+      files = [];
+    }
   };
+
   const mostrarRptSubirArchivo = (rpta) => {
     if (rpta) {
       viajesContador++;
@@ -957,29 +1015,35 @@ function probarEnvioFiles() {
           multiUploadDeleteButton.click();
           bnt_enviar.disabled = false;
           bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
+          files = [];
         }
       }
+    } else {
+      alert("Error en la respuesta del servidor al subir el archivo.");
+      files = [];
     }
   };
+
   const validaSeleccionados = () => {
     const select = document.querySelectorAll(".uploadFiles");
     const filtrados = Array.from(select).filter((el) => el.value === "");
     return filtrados.length;
   };
 
-  const longitud = validaSeleccionados();
-  console.log(longitud);
-
   if (!files || files.length === 0) {
     alert("No hay archivos para enviar.");
     bnt_enviar.disabled = false;
     bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
-    // }
-    // else if (validaSeleccionados > 0) {
-    //   alert("Existen Archivos sin Asignar Nombre.");
   } else {
-    iniciarVariablesViajesFiles();
-    iniciarFile();
-    enviarFiles();
+    const longitud = validaSeleccionados();
+    if (longitud !== 0) {
+      alert("Existen Archivos sin Asignar Nombre.");
+      bnt_enviar.disabled = false;
+      bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
+    } else {
+      iniciarVariablesViajesFiles();
+      iniciarFile();
+      enviarFiles();
+    }
   }
 }
