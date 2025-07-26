@@ -378,10 +378,7 @@ function asignarValores() {
     });
 
     if (varTipoPersona === "1") {
-      let bntEnviar = document.getElementById("bnt-enviar");
-      bntEnviar.style.display = "none";
-      let divSubirArchivos = document.getElementById("divSubirArchivos");
-      divSubirArchivos.style.display = "none";
+      eliminarEnvio();
     }
 
     const elUnidad = document.querySelector('[data-hlp="9"]');
@@ -1016,6 +1013,11 @@ function probarEnvioFiles(data) {
           bnt_enviar.disabled = false;
           bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
           files = [];
+          const elements = document.querySelectorAll("[data-item]");
+          elements.forEach((el) => {
+            ((el.value = ""), (el.dataset.valor = ""));
+          });
+          eliminarEnvio();
         }
       }
     } else {
@@ -1046,4 +1048,11 @@ function probarEnvioFiles(data) {
       enviarFiles();
     }
   }
+}
+
+function eliminarEnvio() {
+  let bntEnviar = document.getElementById("bnt-enviar");
+  bntEnviar.style.display = "none";
+  let divSubirArchivos = document.getElementById("divSubirArchivos");
+  divSubirArchivos.style.display = "none";
 }
