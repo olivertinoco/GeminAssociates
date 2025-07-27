@@ -789,8 +789,12 @@ function subirArchivos() {
             originalFiles[index]
           ) {
             const originalFile = originalFiles[index];
+            const originalName = originalFile.name;
+            const extension = originalName.includes(".")
+              ? "." + originalName.split(".").pop().toLowerCase()
+              : "";
             const newFileName =
-              dni.value.trim() + "-" + selectedOption.dataset.valor;
+              dni.value.trim() + "-" + selectedOption.dataset.valor + extension;
             // Crear un nuevo archivo con el nuevo nombre
             const renamedFile = new File([originalFile], newFileName, {
               type: originalFile.type,
@@ -1018,6 +1022,8 @@ function probarEnvioFiles(data) {
             ((el.value = ""), (el.dataset.valor = ""));
           });
           eliminarEnvio();
+          const url = hdfRaiz.value + "Home/Index";
+          window.location.href = url;
         }
       }
     } else {
