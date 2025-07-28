@@ -69,6 +69,18 @@
     <p class="cuerpo">
       <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 uppercase" type="text" placeholder="nombres" name="no-autofill-user" autocomplete="off" disabled data-item="8">
     </p>
+    <p class="cuerpo mt-2">
+      Grupo Sanguineo <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="109"></select>
+    </p>
+    <p class="cuerpo mt-1">
+      Talla <span class="text-red-500">*</span>
+    </p>
+    <p class="cuerpo">
+        <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros" type="text" min="0" max="3" placeholder="talla (en metros)" name="no-autofill-user" autocomplete="off" inputmode="decimal" data-item="110">
+    </p>
   </div>
 </div>
 
@@ -94,7 +106,13 @@
     <p class="cuerpo">
       <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-item="12" data-hlp="52"></select>
     </p>
+    <p class="cuerpo mt-2">
+        Pretensiones Salariales
+    </p>
     <p class="cuerpo">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros no-req" type="text" inputmode="decimal" placeholder="pretension salarial" min="0" max="50000" name="no-autofill-user" autocomplete="off" data-item="111" data-maximo="5">
+    </p>
+    <p class="cuerpo mt-2">
       Comunidad
     </p>
     <p class="cuerpo">
@@ -165,7 +183,7 @@
       Telefono personal <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="numero telefono" name="complementario" autocomplete="off" data-item="19">
+        <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros" type="text" inputmode="decimal" placeholder="numero telefono" name="complementario" autocomplete="off" min="0" max="999999999"  data-maximo="999999999" data-item="19">
     </p>
     <p class="cuerpo mt-4">
       Estado Civil <span class="text-red-500">*</span>
@@ -228,7 +246,7 @@
     </p>
     <p class="cuerpo w-1/2">
       <label>Años en mineria</label>
-      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros" type="number" placeholder="Nro años mineria" name="emergencia" autocomplete="off" min="0" max="50" inputmode="numeric" pattern="[0-9]*"data-item="27">
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400 solo-enteros" type="number" placeholder="Nro años mineria" name="emergencia" autocomplete="off" min="0" max="50" inputmode="numeric" pattern="[0-9]*" data-item="27">
     </p>
     </div>
   </div>
@@ -238,11 +256,11 @@
 <div class="flex justify-center mt-8">
   <div class="card">
     <h2 class="titulo">Datos de Pago y Pensión</h2>
-    <p class="cuerpo">
+    <p class="cuerpo" data-value data-item="112">
       Entidad Bancaria <span class="text-red-500">*</span>
     </p>
-    <p class="cuerpo">
-      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-hlp="28"></select>
+    <p class="cuerpo" data-value data-item="113">
+      <select class="border border-gray-300 w-full px-3 py-2 mb-4 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600" data-hlp="28" data-item="114"></select>
     </p>
     <p class="cuerpo">
       Adjuntar la captura de pantalla de su cuenta Bancaria donde se visualice el número de cuenta y el CCI
@@ -256,13 +274,13 @@
       cuenta Bancaria <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Nro de cuenta bancaria" name="no-autofill-user" autocomplete="off" >
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Nro de cuenta bancaria" name="no-autofill-user" autocomplete="off" data-item="115">
     </p>
     <p class="cuerpo mt-2">
       cuenta Interbancaria (CCI) <span class="text-red-500">*</span>
     </p>
     <p class="cuerpo">
-      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Numero de cuenta Interbancaria" name="no-autofill-user" autocomplete="off" >
+      <input class="border border-gray-300 w-full px-3 py-2  rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 invalid:focus:ring-red-400" type="text" placeholder="Numero de cuenta Interbancaria" name="no-autofill-user" autocomplete="off" data-item="116">
     </p>
     <p class="cuerpo mt-4">
       Sistema de Pensiones <span class="text-red-500">*</span>

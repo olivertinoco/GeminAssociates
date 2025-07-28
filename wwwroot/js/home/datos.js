@@ -98,18 +98,37 @@ function seteosIniciales() {
 
   const elUnidad = document.querySelector('[data-hlp="9"]');
   const elProyecto = document.querySelector('[data-hlp="51"]');
-  const elAnnoPuesto = document.querySelectorAll(
-    'input.solo-enteros[type="number"]',
-  );
+  const elvalidaciones = document.querySelectorAll(`
+    input.solo-enteros[type="number"],
+    input.solo-enteros[type="text"][inputmode="decimal"]
+  `);
 
-  elAnnoPuesto.forEach((input) => {
+  elvalidaciones.forEach((input) => {
     input.addEventListener("input", (e) => {
-      let valor = e.target.value.replace(/[^\d]/g, "").slice(0, 2);
-      const max = parseInt(e.target.max) || 50;
-      if (parseInt(valor) > max) {
-        valor = max.toString();
+      let valor = e.target.value;
+      valor = valor.replace(",", ".");
+      valor = valor.replace(/[^0-9.]/g, "");
+      const partes = valor.split(".");
+      if (partes.length > 2) {
+        valor = partes[0] + "." + partes[1];
       }
-      e.target.value = valor;
+      let longitudEnteros = parseInt(input.dataset.maximo);
+      if (Number.isNaN(longitudEnteros)) {
+        longitudEnteros = 2;
+      }
+      const parteEntera = partes[0].slice(0, longitudEnteros);
+      const parteDecimal = partes[1]?.slice(0, 2);
+      let nuevoValor =
+        parteDecimal !== undefined
+          ? `${parteEntera}.${parteDecimal}`
+          : parteEntera;
+
+      const max = parseFloat(input.max);
+      if (!Number.isNaN(max) && parseFloat(nuevoValor) > max) {
+        nuevoValor = max.toString();
+      }
+
+      input.value = nuevoValor;
     });
   });
 
@@ -258,6 +277,26 @@ function seteosIniciales() {
       el.value = el.value.toUpperCase();
     });
   });
+
+  const lsGrupoSangre = (
+    (result.find((item) => item.cab === "301")?.datos ?? [])[0] ?? ""
+  ).split("|");
+
+  const elGrupoSangre = document.querySelector('[data-item="109"]');
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "SELECCIONE...";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  elGrupoSangre.appendChild(defaultOption);
+
+  lsGrupoSangre.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = item;
+    elGrupoSangre.appendChild(option);
+  });
 }
 
 function creandoChecksEPP(lsEppCheck) {
@@ -360,7 +399,10 @@ function asignarValores() {
         if (TAGS_VALIDOS.includes(el.tagName)) {
           const elValor = varTipoPersona === "2" ? "" : valor;
           el.setAttribute("data-valor", elValor);
-          el.maxLength = parseInt(len) || 0;
+          const maxLen = parseInt(len);
+          if (!Number.isNaN(maxLen)) {
+            el.maxLength = maxLen;
+          }
           el.required = !el.classList.contains("no-req");
           pos === "16" && asignarUbigeo(valor);
         }

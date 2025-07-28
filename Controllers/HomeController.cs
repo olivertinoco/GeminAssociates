@@ -162,7 +162,7 @@ public class HomeController : Controller
                 if (persona?.Data != null)
                 {
                     var d = persona.Data;
-                    rpta = $"1|{d.Dni}|{d.ApPaterno}|{d.ApMaterno}|{d.Nombres}||{d.Sexo}|||{d.EstadoCivil}||{d.FechaNacimiento}||||||||||||{d.Direccion}|{d.Ubigeo}|";
+                    rpta = $"1|{d.Dni}|{d.ApPaterno}|{d.ApMaterno}|{d.Nombres}||{d.Sexo}|||{d.EstadoCivil}||{d.FechaNacimiento}|||||||||||||||{d.Direccion}|{d.Ubigeo}|";
                 }
                 else
                 {
