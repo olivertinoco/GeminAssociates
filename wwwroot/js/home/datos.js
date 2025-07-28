@@ -107,27 +107,33 @@ function seteosIniciales() {
     input.addEventListener("input", (e) => {
       let valor = e.target.value;
       valor = valor.replace(",", ".");
-      valor = valor.replace(/[^0-9.]/g, "");
-      const partes = valor.split(".");
-      if (partes.length > 2) {
-        valor = partes[0] + "." + partes[1];
-      }
-      let longitudEnteros = parseInt(input.dataset.maximo);
-      if (Number.isNaN(longitudEnteros)) {
-        longitudEnteros = 2;
-      }
-      const parteEntera = partes[0].slice(0, longitudEnteros);
-      const parteDecimal = partes[1]?.slice(0, 2);
-      let nuevoValor =
-        parteDecimal !== undefined
-          ? `${parteEntera}.${parteDecimal}`
-          : parteEntera;
+      const usaGuion = input.hasAttribute("data-guion");
+      const regex = usaGuion ? /[^0-9-]/g : /[^0-9.]/g;
+      valor = valor.replace(regex, "");
+      let nuevoValor;
 
-      const max = parseFloat(input.max);
-      if (!Number.isNaN(max) && parseFloat(nuevoValor) > max) {
-        nuevoValor = max.toString();
+      if (usaGuion) {
+        nuevoValor = valor;
+      } else {
+        const partes = valor.split(".");
+        if (partes.length > 2) {
+          valor = partes[0] + "." + partes[1];
+        }
+        let longitudEnteros = parseInt(input.dataset.maximo);
+        if (Number.isNaN(longitudEnteros)) {
+          longitudEnteros = 2;
+        }
+        const parteEntera = partes[0].slice(0, longitudEnteros);
+        const parteDecimal = partes[1]?.slice(0, 2);
+        nuevoValor =
+          parteDecimal !== undefined
+            ? `${parteEntera}.${parteDecimal}`
+            : parteEntera;
+        const max = parseFloat(input.max);
+        if (!Number.isNaN(max) && parseFloat(nuevoValor) > max) {
+          nuevoValor = max.toString();
+        }
       }
-
       input.value = nuevoValor;
     });
   });
