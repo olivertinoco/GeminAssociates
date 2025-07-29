@@ -1,6 +1,5 @@
 let lsDatos = [];
 let files = [];
-let originalFiles = [];
 let filesArray = [];
 var fileSize = 0;
 var viajesContador = 0;
@@ -13,6 +12,7 @@ var nombreCarpeta = "";
 let varTipoPersona;
 let lsFilesUpload = [];
 let objUbigeos = {};
+let allFiles = [];
 
 window.onload = function () {
   seteosIniciales();
@@ -724,16 +724,27 @@ function subirArchivos() {
   };
 
   const objectUrls = [];
+  allFiles = [];
 
   multiUploadInput.addEventListener("change", function (e) {
     if (multiUploadInput.files && multiUploadInput.files.length > 0) {
-      // files = Array.from(multiUploadInput.files);
-      // const filesArray = [...files];
-      originalFiles = Array.from(e.target.files);
-      files = [...originalFiles];
-      filesArray = [...originalFiles];
+      const newFiles = Array.from(e.target.files);
+      newFiles.forEach((file) => {
+        const exists = allFiles.some(
+          (f) =>
+            f.file.name === file.name &&
+            f.file.size === file.size &&
+            f.file.lastModified === file.lastModified,
+        );
+        if (!exists) {
+          allFiles.push({ file, tipo: "" });
+        }
+      });
 
-      const totalFiles = filesArray.length;
+      files = allFiles.map((f) => f.file);
+      filesArray = [...files];
+
+      const totalFiles = allFiles.length;
       let loadedFiles = 0;
 
       multiUploadDisplayText.innerHTML = `${totalFiles} archivos seleccionados`;
@@ -757,13 +768,15 @@ function subirArchivos() {
       );
       multiUploadDeleteButton.classList.remove("hidden");
       multiUploadDeleteButton.classList.add("z-100", "p-2", "my-auto");
-      const containerList = [];
 
+      const containerList = [];
       const selects = [];
       const selectedValues = new Map();
       const dni = document.querySelector('[data-item="4"]');
 
-      filesArray.forEach((file, index) => {
+      filesArray.forEach((_, index) => {
+        const selectedValue = allFiles[index]?.tipo ?? "";
+
         const container = document.createElement("div");
         container.classList.add(
           "w-full",
@@ -781,10 +794,48 @@ function subirArchivos() {
           "mb-3",
         );
 
+        const button = document.createElement("button");
+        button.textContent = "quitar";
+        button.classList.add(
+          "px-2",
+          "py-0",
+          "border",
+          "rounded",
+          "text-blue-600",
+          "border-blue-300",
+          "hover:bg-blue-100",
+          "transition",
+          "duration-200",
+          "ease-in-out",
+          "text-sm",
+          "leading-none",
+          "m-0",
+        );
+        button.addEventListener("click", (e) => {
+          e.stopPropagation();
+          alert("quitar");
+        });
+        const wrapper = document.createElement("div");
+        wrapper.classList.add(
+          "flex",
+          "justify-between",
+          "items-center",
+          "w-full",
+          "text-sm",
+          "font-semibold",
+          "text-gray-700",
+          "py-0",
+          "leading-none",
+          "m-0",
+          "h-auto",
+        );
         const label = document.createElement("label");
         label.textContent = `Archivo (${index + 1}):`;
-        label.classList.add("text-sm", "font-semibold", "text-gray-700");
-        container.appendChild(label);
+        label.classList.add("m-0", "p-0", "leading-none");
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(button);
+        container.appendChild(wrapper);
 
         const select = document.createElement("select");
         select.classList.add(
@@ -796,9 +847,7 @@ function subirArchivos() {
           "bg-white",
           "uploadFiles",
         );
-
         const optionsMap = new Map();
-
         const defaultOption = document.createElement("option");
         defaultOption.value = "";
         defaultOption.textContent = "SELECCIONE TIPO DOC...";
@@ -812,34 +861,32 @@ function subirArchivos() {
           option.value = valor;
           option.textContent = text;
           option.dataset.valor = dato;
+
+          if (Array.from(selectedValues.values()).includes(valor)) {
+            option.disabled = true;
+          }
           select.appendChild(option);
           optionsMap.set(valor, option);
         });
-
+        //persistencia de selects
+        if (selectedValue) {
+          select.value = selectedValue;
+        }
         // NOTA: VALIDACIONES DE COMBOS NO DUPLICADOS EN SU DATA
         // =======================================================
         selects.push({ select, optionsMap });
-
         select.addEventListener("change", (event) => {
           const currentSelect = event.target;
           const newValue = currentSelect.value;
-          const prevValue = selectedValues.get(currentSelect);
+          const prevValue = selectedValues.get(index);
           const selectedOption = currentSelect.selectedOptions[0];
 
-          selectedValues.set(currentSelect, newValue);
-          const index = selects.findIndex(
-            ({ select }) => select === currentSelect,
-          );
+          selectedValues.set(index, newValue);
 
-          if (
-            selectedOption &&
-            selectedOption.dataset.valor &&
-            originalFiles[index]
-          ) {
-            const originalFile = originalFiles[index];
-            const originalName = originalFile.name;
-            const extension = originalName.includes(".")
-              ? "." + originalName.split(".").pop().toLowerCase()
+          const originalFile = allFiles[index]?.file;
+          if (selectedOption && selectedOption.dataset.valor && originalFile) {
+            const extension = originalFile.name.includes(".")
+              ? "." + originalFile.name.split(".").pop().toLowerCase()
               : "";
             const newFileName =
               dni.value.trim() + "-" + selectedOption.dataset.valor + extension;
@@ -849,8 +896,10 @@ function subirArchivos() {
             });
             files[index] = renamedFile;
             filesArray[index] = renamedFile;
+            allFiles[index].tipo = newValue;
           }
 
+          // Habilitar la opcion anterior si esta existe
           if (prevValue) {
             selects.forEach(({ select: otherSelect, optionsMap }) => {
               if (otherSelect !== currentSelect && optionsMap.has(prevValue)) {
@@ -858,7 +907,7 @@ function subirArchivos() {
               }
             });
           }
-
+          // Deshabilitar la nueva opcion en los demas selects
           if (newValue) {
             selects.forEach(({ select: otherSelect, optionsMap }) => {
               if (otherSelect !== currentSelect && optionsMap.has(newValue)) {
@@ -871,16 +920,19 @@ function subirArchivos() {
         container.appendChild(select);
         containerList[index] = container;
         imagesContainer.appendChild(container);
+
+        if (select.value) {
+          select.dispatchEvent(new Event("change"));
+        }
       });
 
       filesArray.forEach((file, index) => {
         const reader = new FileReader();
+        const url = URL.createObjectURL(file);
+        objectUrls.push(url);
 
         reader.onload = function () {
           const container = containerList[index];
-          const url = URL.createObjectURL(file);
-          objectUrls.push(url);
-
           if (file.type.startsWith("image/")) {
             const img = document.createElement("img");
             img.src = url;
@@ -981,6 +1033,7 @@ function subirArchivos() {
 
     objectUrls.forEach((url) => URL.revokeObjectURL(url));
     objectUrls.length = 0; // limpiar Arreglo
+    allFiles.length = 0;
 
     multiUploadInput.value = "";
     multiUploadDisplayText.innerHTML = "";
@@ -1046,6 +1099,7 @@ function probarEnvioFiles(data) {
       console.error("Error al subir el archivo:", error);
       alert("Error en la carga del archivo.");
       files = [];
+      allFiles.length = 0;
     }
   };
 
@@ -1065,6 +1119,7 @@ function probarEnvioFiles(data) {
           bnt_enviar.disabled = false;
           bnt_enviar.classList.remove("pointer-events-none", "opacity-50");
           files = [];
+          allFiles.length = 0;
           const elements = document.querySelectorAll("[data-item]");
           elements.forEach((el) => {
             ((el.value = ""), (el.dataset.valor = ""));
@@ -1077,6 +1132,7 @@ function probarEnvioFiles(data) {
     } else {
       alert("Error en la respuesta del servidor al subir el archivo.");
       files = [];
+      allFiles.length = 0;
     }
   };
 
