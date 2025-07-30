@@ -586,23 +586,9 @@ function grabacionData() {
     }
 
     const salida = lsData.join("|") + "|" + lsMeta.join("|");
-    console.log(salida);
+    // console.log(salida);
 
     probarEnvioFiles(salida);
-
-    // const formData = new FormData();
-    // formData.append("campos", salida);
-    // Http.post(
-    //   "Home/GrabarPostulante",
-    //   function (rpta) {
-    //     if (rpta === "ok") {
-    //       alert("Exito, se envio el formulario ...");
-    //     } else {
-    //       alert("ERROR... no se pudo enviar la informacion...");
-    //     }
-    //   },
-    //   formData,
-    // );
   });
 }
 
@@ -740,285 +726,311 @@ function subirArchivos() {
           allFiles.push({ file, tipo: "" });
         }
       });
-
-      files = allFiles.map((f) => f.file);
-      filesArray = [...files];
-
-      const totalFiles = allFiles.length;
-      let loadedFiles = 0;
-
-      multiUploadDisplayText.innerHTML = `${totalFiles} archivos seleccionados`;
-
-      imagesContainer.innerHTML = "";
-      imagesContainer.classList.remove(
-        "w-full",
-        "max-w-[500px]",
-        "mx-auto",
-        "flex",
-        "flex-col",
-        "gap-4",
-      );
-      imagesContainer.classList.add(
-        "w-full",
-        "max-w-[500px]",
-        "mx-auto",
-        "flex",
-        "flex-col",
-        "gap-4",
-      );
-      multiUploadDeleteButton.classList.remove("hidden");
-      multiUploadDeleteButton.classList.add("z-100", "p-2", "my-auto");
-
-      const containerList = [];
-      const selects = [];
-      const selectedValues = new Map();
-      const dni = document.querySelector('[data-item="4"]');
-
-      filesArray.forEach((_, index) => {
-        const selectedValue = allFiles[index]?.tipo ?? "";
-
-        const container = document.createElement("div");
-        container.classList.add(
-          "w-full",
-          "max-h-64",
-          "overflow-y-auto", //scroll vertical
-          "flex",
-          "flex-col",
-          "items-stretch",
-          "justify-start",
-          "bg-gray-100",
-          "rounded-lg",
-          "shadow",
-          "p-2",
-          "gap-2",
-          "mb-3",
-        );
-
-        const button = document.createElement("button");
-        button.textContent = "quitar";
-        button.classList.add(
-          "px-2",
-          "py-0",
-          "border",
-          "rounded",
-          "text-blue-600",
-          "border-blue-300",
-          "hover:bg-blue-100",
-          "transition",
-          "duration-200",
-          "ease-in-out",
-          "text-sm",
-          "leading-none",
-          "m-0",
-        );
-        button.addEventListener("click", (e) => {
-          e.stopPropagation();
-          alert("quitar");
-        });
-        const wrapper = document.createElement("div");
-        wrapper.classList.add(
-          "flex",
-          "justify-between",
-          "items-center",
-          "w-full",
-          "text-sm",
-          "font-semibold",
-          "text-gray-700",
-          "py-0",
-          "leading-none",
-          "m-0",
-          "h-auto",
-        );
-        const label = document.createElement("label");
-        label.textContent = `Archivo (${index + 1}):`;
-        label.classList.add("m-0", "p-0", "leading-none");
-
-        wrapper.appendChild(label);
-        wrapper.appendChild(button);
-        container.appendChild(wrapper);
-
-        const select = document.createElement("select");
-        select.classList.add(
-          "w-full",
-          "border",
-          "rounded",
-          "p-1",
-          "text-sm",
-          "bg-white",
-          "uploadFiles",
-        );
-        const optionsMap = new Map();
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "SELECCIONE TIPO DOC...";
-        defaultOption.disabled = true;
-        defaultOption.selected = true;
-        select.appendChild(defaultOption);
-
-        lsFilesUpload.forEach((item) => {
-          const [valor, text, dato] = item.split("|");
-          const option = document.createElement("option");
-          option.value = valor;
-          option.textContent = text;
-          option.dataset.valor = dato;
-
-          if (Array.from(selectedValues.values()).includes(valor)) {
-            option.disabled = true;
-          }
-          select.appendChild(option);
-          optionsMap.set(valor, option);
-        });
-        //persistencia de selects
-        if (selectedValue) {
-          select.value = selectedValue;
-        }
-        // NOTA: VALIDACIONES DE COMBOS NO DUPLICADOS EN SU DATA
-        // =======================================================
-        selects.push({ select, optionsMap });
-        select.addEventListener("change", (event) => {
-          const currentSelect = event.target;
-          const newValue = currentSelect.value;
-          const prevValue = selectedValues.get(index);
-          const selectedOption = currentSelect.selectedOptions[0];
-
-          selectedValues.set(index, newValue);
-
-          const originalFile = allFiles[index]?.file;
-          if (selectedOption && selectedOption.dataset.valor && originalFile) {
-            const extension = originalFile.name.includes(".")
-              ? "." + originalFile.name.split(".").pop().toLowerCase()
-              : "";
-            const newFileName =
-              dni.value.trim() + "-" + selectedOption.dataset.valor + extension;
-            // Crear un nuevo archivo con el nuevo nombre
-            const renamedFile = new File([originalFile], newFileName, {
-              type: originalFile.type,
-            });
-            files[index] = renamedFile;
-            filesArray[index] = renamedFile;
-            allFiles[index].tipo = newValue;
-          }
-
-          // Habilitar la opcion anterior si esta existe
-          if (prevValue) {
-            selects.forEach(({ select: otherSelect, optionsMap }) => {
-              if (otherSelect !== currentSelect && optionsMap.has(prevValue)) {
-                optionsMap.get(prevValue).disabled = false;
-              }
-            });
-          }
-          // Deshabilitar la nueva opcion en los demas selects
-          if (newValue) {
-            selects.forEach(({ select: otherSelect, optionsMap }) => {
-              if (otherSelect !== currentSelect && optionsMap.has(newValue)) {
-                optionsMap.get(newValue).disabled = true;
-              }
-            });
-          }
-        });
-
-        container.appendChild(select);
-        containerList[index] = container;
-        imagesContainer.appendChild(container);
-
-        if (select.value) {
-          select.dispatchEvent(new Event("change"));
-        }
-      });
-
-      filesArray.forEach((file, index) => {
-        const reader = new FileReader();
-        const url = URL.createObjectURL(file);
-        objectUrls.push(url);
-
-        reader.onload = function () {
-          const container = containerList[index];
-          if (file.type.startsWith("image/")) {
-            const img = document.createElement("img");
-            img.src = url;
-            img.classList.add(
-              "w-full",
-              "h-auto",
-              "object-cover",
-              "rounded",
-              "border",
-            );
-            container.appendChild(img);
-          } else if (file.type === "application/pdf") {
-            const pdfName = file.name.toLowerCase();
-            const risky =
-              file.size > 1024 * 1024 * 2 ||
-              pdfName.includes("firma") ||
-              pdfName.includes("plantilla");
-
-            if (risky) {
-              const label = document.createElement("label");
-              label.classList.add(
-                "text-red-600",
-                "text-sm",
-                "text-center",
-                "block",
-                "mt-2",
-              );
-              label.innerText = `No se previsualiza PDF "${file.name}".`;
-              container.appendChild(label);
-            } else {
-              // si no es archivo riesgoso, mostrar el embed normalmente
-              const embed = document.createElement("embed");
-              embed.src = url;
-              embed.type = "application/pdf";
-              embed.classList.add("w-full", "h-48", "border", "rounded");
-              container.appendChild(embed);
-            }
-          } else {
-            const object = document.createElement("object");
-            object.data = url;
-            object.type = file.type || "application/octet-stream";
-            object.classList.add(
-              "w-full",
-              "h-32",
-              "border",
-              "rounded",
-              "bg-white",
-              "shadow",
-              "text-sm",
-              "text-gray-600",
-              "text-center",
-            );
-
-            const fallback = document.createElement("p");
-            fallback.textContent = `Preview No Disponible: ${file.name}`;
-            fallback.classList.add(
-              "text-center",
-              "p-2",
-              "text-gray-600",
-              "text-sm",
-            );
-
-            object.appendChild(fallback);
-            container.appendChild(object);
-          }
-
-          loadedFiles++;
-          if (loadedFiles === totalFiles) {
-            bnt_enviar.disabled = false;
-            bnt_enviar.classList.remove("cursor-not-allowed", "opacity-50");
-          }
-        };
-
-        reader.onerror = function () {
-          console.error("Error leyendo archivo:", file.name);
-          loadedFiles++;
-          if (loadedFiles === totalFiles) {
-            bnt_enviar.disabled = false;
-            bnt_enviar.classList.remove("cursor-not-allowed", "opacity-50");
-          }
-        };
-
-        reader.readAsDataURL(file);
-      });
+      renderFiles();
     }
   });
+
+  function renderFiles() {
+    files = allFiles.map((f) => f.file);
+    filesArray = [...files];
+
+    const totalFiles = allFiles.length;
+    let loadedFiles = 0;
+
+    multiUploadDisplayText.innerHTML = `${totalFiles} archivos seleccionados`;
+
+    imagesContainer.innerHTML = "";
+    imagesContainer.classList.remove(
+      "w-full",
+      "max-w-[500px]",
+      "mx-auto",
+      "flex",
+      "flex-col",
+      "gap-4",
+    );
+    imagesContainer.classList.add(
+      "w-full",
+      "max-w-[500px]",
+      "mx-auto",
+      "flex",
+      "flex-col",
+      "gap-4",
+    );
+    multiUploadDeleteButton.classList.remove("hidden");
+    multiUploadDeleteButton.classList.add("z-100", "p-2", "my-auto");
+
+    const containerList = [];
+    const selects = [];
+    const selectedValues = new Map();
+    const dni = document.querySelector('[data-item="4"]');
+
+    filesArray.forEach((_, index) => {
+      const selectedValue = allFiles[index]?.tipo ?? "";
+
+      const container = document.createElement("div");
+      container.classList.add(
+        "w-full",
+        "max-h-64",
+        "overflow-y-auto", //scroll vertical
+        "flex",
+        "flex-col",
+        "items-stretch",
+        "justify-start",
+        "bg-gray-100",
+        "rounded-lg",
+        "shadow",
+        "p-2",
+        "gap-2",
+        "mb-3",
+      );
+
+      const button = document.createElement("button");
+      button.textContent = "quitar";
+      button.classList.add(
+        "px-2",
+        "py-0",
+        "border",
+        "rounded",
+        "text-blue-600",
+        "border-blue-300",
+        "hover:bg-blue-100",
+        "transition",
+        "duration-200",
+        "ease-in-out",
+        "text-sm",
+        "leading-none",
+        "m-0",
+      );
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        //Habilitar el valor del select eliminado en los demas
+        const removeTipo = allFiles[index]?.tipo;
+        if (removeTipo) {
+          selects.forEach(({ select: otherSelect, optionsMap }) => {
+            if (optionsMap.has(removeTipo)) {
+              optionsMap.get(removeTipo).disabled = false;
+            }
+          });
+        }
+        // Eliminar datos del Array
+        allFiles.splice(index, 1);
+        files.splice(index, 1);
+        filesArray.splice(index, 1);
+        selects.splice(index, 1);
+        containerList.splice(index, 1);
+        selectedValues.delete(index);
+        container.remove();
+
+        imagesContainer.innerHTML = "";
+        allFiles.forEach((_, i) => {
+          selectedValues.set(i, allFiles[i]?.tipo ?? "");
+        });
+        renderFiles();
+      });
+
+      const wrapper = document.createElement("div");
+      wrapper.classList.add(
+        "flex",
+        "justify-between",
+        "items-center",
+        "w-full",
+        "text-sm",
+        "font-semibold",
+        "text-gray-700",
+        "py-0",
+        "leading-none",
+        "m-0",
+        "h-auto",
+      );
+      const label = document.createElement("label");
+      label.textContent = `Archivo (${index + 1}):`;
+      label.classList.add("m-0", "p-0", "leading-none");
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(button);
+      container.appendChild(wrapper);
+
+      const select = document.createElement("select");
+      select.classList.add(
+        "w-full",
+        "border",
+        "rounded",
+        "p-1",
+        "text-sm",
+        "bg-white",
+        "uploadFiles",
+      );
+      const optionsMap = new Map();
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "SELECCIONE TIPO DOC...";
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      select.appendChild(defaultOption);
+
+      lsFilesUpload.forEach((item) => {
+        const [valor, text, dato] = item.split("|");
+        const option = document.createElement("option");
+        option.value = valor;
+        option.textContent = text;
+        option.dataset.valor = dato;
+
+        if (Array.from(selectedValues.values()).includes(valor)) {
+          option.disabled = true;
+        }
+        select.appendChild(option);
+        optionsMap.set(valor, option);
+      });
+      //persistencia de selects
+      if (selectedValue) {
+        select.value = selectedValue;
+      }
+      // NOTA: VALIDACIONES DE COMBOS NO DUPLICADOS EN SU DATA
+      // =======================================================
+      selects.push({ select, optionsMap });
+      select.addEventListener("change", (event) => {
+        const currentSelect = event.target;
+        const newValue = currentSelect.value;
+        const prevValue = selectedValues.get(index);
+        const selectedOption = currentSelect.selectedOptions[0];
+
+        selectedValues.set(index, newValue);
+
+        const originalFile = allFiles[index]?.file;
+        if (selectedOption && selectedOption.dataset.valor && originalFile) {
+          const extension = originalFile.name.includes(".")
+            ? "." + originalFile.name.split(".").pop().toLowerCase()
+            : "";
+          const newFileName =
+            dni.value.trim() + "-" + selectedOption.dataset.valor + extension;
+          // Crear un nuevo archivo con el nuevo nombre
+          const renamedFile = new File([originalFile], newFileName, {
+            type: originalFile.type,
+          });
+          files[index] = renamedFile;
+          filesArray[index] = renamedFile;
+          allFiles[index].tipo = newValue;
+        }
+
+        // Habilitar la opcion anterior si esta existe
+        if (prevValue) {
+          selects.forEach(({ select: otherSelect, optionsMap }) => {
+            if (otherSelect !== currentSelect && optionsMap.has(prevValue)) {
+              optionsMap.get(prevValue).disabled = false;
+            }
+          });
+        }
+        // Deshabilitar la nueva opcion en los demas selects
+        if (newValue) {
+          selects.forEach(({ select: otherSelect, optionsMap }) => {
+            if (otherSelect !== currentSelect && optionsMap.has(newValue)) {
+              optionsMap.get(newValue).disabled = true;
+            }
+          });
+        }
+      });
+
+      container.appendChild(select);
+      containerList[index] = container;
+      imagesContainer.appendChild(container);
+
+      if (select.value) {
+        select.dispatchEvent(new Event("change"));
+      }
+    });
+
+    filesArray.forEach((file, index) => {
+      const reader = new FileReader();
+      const url = URL.createObjectURL(file);
+      objectUrls.push(url);
+
+      reader.onload = function () {
+        const container = containerList[index];
+        if (file.type.startsWith("image/")) {
+          const img = document.createElement("img");
+          img.src = url;
+          img.classList.add(
+            "w-full",
+            "h-auto",
+            "object-cover",
+            "rounded",
+            "border",
+          );
+          container.appendChild(img);
+        } else if (file.type === "application/pdf") {
+          const pdfName = file.name.toLowerCase();
+          const risky =
+            file.size > 1024 * 1024 * 2 ||
+            pdfName.includes("firma") ||
+            pdfName.includes("plantilla");
+
+          if (risky) {
+            const label = document.createElement("label");
+            label.classList.add(
+              "text-red-600",
+              "text-sm",
+              "text-center",
+              "block",
+              "mt-2",
+            );
+            label.innerText = `No se previsualiza PDF "${file.name}".`;
+            container.appendChild(label);
+          } else {
+            // si no es archivo riesgoso, mostrar el embed normalmente
+            const embed = document.createElement("embed");
+            embed.src = url;
+            embed.type = "application/pdf";
+            embed.classList.add("w-full", "h-48", "border", "rounded");
+            container.appendChild(embed);
+          }
+        } else {
+          const object = document.createElement("object");
+          object.data = url;
+          object.type = file.type || "application/octet-stream";
+          object.classList.add(
+            "w-full",
+            "h-32",
+            "border",
+            "rounded",
+            "bg-white",
+            "shadow",
+            "text-sm",
+            "text-gray-600",
+            "text-center",
+          );
+
+          const fallback = document.createElement("p");
+          fallback.textContent = `Preview No Disponible: ${file.name}`;
+          fallback.classList.add(
+            "text-center",
+            "p-2",
+            "text-gray-600",
+            "text-sm",
+          );
+
+          object.appendChild(fallback);
+          container.appendChild(object);
+        }
+
+        loadedFiles++;
+        if (loadedFiles === totalFiles) {
+          bnt_enviar.disabled = false;
+          bnt_enviar.classList.remove("cursor-not-allowed", "opacity-50");
+        }
+      };
+
+      reader.onerror = function () {
+        console.error("Error leyendo archivo:", file.name);
+        loadedFiles++;
+        if (loadedFiles === totalFiles) {
+          bnt_enviar.disabled = false;
+          bnt_enviar.classList.remove("cursor-not-allowed", "opacity-50");
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
 
   multiUploadDeleteButton.addEventListener("click", () => {
     imagesContainer.innerHTML = "";
