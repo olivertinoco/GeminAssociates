@@ -70,6 +70,7 @@ coverage/
 publish/
 wwwroot/dist/
 wwwroot/node_modules/
+publicado/
 
 ## Tailwind frontend (specific)
 Tailwind/node_modules/
