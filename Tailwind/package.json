@@ -10,6 +10,8 @@
   },
   "scripts": {
     "dev:css": "tailwindcss -i ./src/styles/input.css -o ../wwwroot/css/site.css --watch",
-    "build:css": "tailwindcss -i ./src/styles/input.css -o ../wwwroot/css/site.css --minify"
+    "build:css": "tailwindcss -i ./src/styles/input.css -o ../wwwroot/css/site.css --minify",
+    "build:js": "bun run build.js",
+    "build": "bun run build:css && bun run build:js"
   }
 }
