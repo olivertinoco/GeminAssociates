@@ -585,11 +585,53 @@ function grabacionData() {
       lsMeta.push("1.4.4");
     }
 
-    const salida = lsData.join("|") + "|" + lsMeta.join("|");
-    // console.log(salida);
+    const reglas = {
+      1: { 1: ["1.1.1"] },
+      5: { 2: ["1.5.1", "1.5.2"] },
+    };
+
+    const { lsMeta: lsMetaFiltrado, lsData: lsDataFiltrado } = applyReglas(
+      lsMeta,
+      lsData,
+      reglas,
+    );
+
+    let salida = "";
+    if (lsDataFiltrado.length !== 0 && lsMetaFiltrado !== 0) {
+      salida = lsDataFiltrado.join("|") + "|" + lsMetaFiltrado.join("|");
+    }
+
+    // console.log("data:", lsDataFiltrado);
+    // console.log("meta:", lsMetaFiltrado);
+    // console.log("salida:", salida);
 
     probarEnvioFiles(salida);
   });
+}
+
+function applyReglas(lsMeta, lsData, reglas) {
+  const counts = lsMeta.reduce((acc, item) => {
+    const [, second] = item.split(".");
+    acc[second] = (acc[second] || 0) + 1;
+    return acc;
+  }, {});
+
+  let toDelete = new Set();
+  Object.entries(counts).forEach(([key, value]) => {
+    const targets = reglas[key]?.[value];
+    if (targets) {
+      targets.forEach((item) => toDelete.add(item));
+    }
+  });
+
+  const result = lsMeta
+    .map((item, idx) => ({ meta: item, data: lsData[idx] }))
+    .filter((pair) => !toDelete.has(pair.meta));
+
+  return {
+    lsMeta: result.map((pair) => pair.meta),
+    lsData: result.map((pair) => pair.data),
+  };
 }
 
 const validarRequeridos = (selector, grupo) => {
@@ -1056,18 +1098,28 @@ function subirArchivos() {
 
 function probarEnvioFiles(data) {
   let viajeCadena = 0;
+  let enviarNombreFiles = "";
   const multiUploadDeleteButton = document.getElementById(
     "multi-upload-delete",
   );
   const bnt_enviar = document.getElementById("bnt-enviar");
   const elDocumento = document.querySelector('[data-item="4"]');
+  const elPostulante = document.querySelector('[data-item="1"]');
   nombreCarpeta = elDocumento.value;
+
+  const capturarNombreFiles = () => {
+    const post_id = elPostulante.dataset.value;
+    enviarNombreFiles = [post_id, ...files.map((f) => f.name)].join("|");
+
+    console.log("archivo:", enviarNombreFiles);
+  };
 
   const iniciarVariablesViajesFiles = () => {
     viajesContador = 0;
     viajesTotal = 0;
     filesContador = 0;
     filesTotal = files.length;
+    capturarNombreFiles();
   };
 
   const iniciarFile = () => {

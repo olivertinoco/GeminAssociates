@@ -57,6 +57,7 @@ public class HomeController : Controller
             string user = Request.Form["data1"].ToString();
             string clave = Request.Form["data2"].ToString();
             string data = $"{user}|{clave}";
+            string dni;
 
             daSQL odaSQL = new daSQL(_configuration, "Cnx");
             rpta = odaSQL.ejecutarComando("dbo.usp_loginConvocatoria", "@data", data);
@@ -74,7 +75,7 @@ public class HomeController : Controller
                 }
                 else
                 {
-                    string dni;
+                    return "El postulante debe estar registrado Previamente...";
                     try
                     {
                         if (numero[0] != clave)
@@ -239,7 +240,8 @@ public class HomeController : Controller
             int.TryParse(form["viajeActual"], out viajeActual);
             var flgInicio = form["flgInicio"].ToString() ?? "0";
 
-            if(cadena != ""){
+            if (cadena != "")
+            {
                 try
                 {
                     daSQL odaSQL = new daSQL(_configuration, "Cnx");
