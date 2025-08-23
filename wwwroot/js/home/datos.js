@@ -1109,9 +1109,11 @@ function probarEnvioFiles(data) {
 
   const capturarNombreFiles = () => {
     const post_id = elPostulante.dataset.value;
-    enviarNombreFiles = [post_id, ...files.map((f) => f.name)].join("|");
-
-    console.log("archivo:", enviarNombreFiles);
+    enviarNombreFiles = [
+      post_id,
+      nombreCarpeta,
+      ...files.map((f) => f.name),
+    ].join("|");
   };
 
   const iniciarVariablesViajesFiles = () => {
@@ -1138,11 +1140,13 @@ function probarEnvioFiles(data) {
     var blob = file.slice(inicio, fin);
     var flag = filesContador == 0 && viajesContador == 0 ? "1" : "0";
     var cadena = viajeCadena == 0 ? data : "";
+    var trazaFiles = viajeCadena == 0 ? enviarNombreFiles : "";
     viajeCadena = 1;
 
     const formData = new FormData();
     formData.append("chunk", blob);
     formData.append("cadena", cadena);
+    formData.append("trazaFiles", trazaFiles);
     formData.append("nombreCarpeta", nombreCarpeta);
     formData.append("nombreArchivo", viajesArchivo);
     formData.append("viajeActual", viajesContador + 1);

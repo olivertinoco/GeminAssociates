@@ -75,9 +75,9 @@ public class HomeController : Controller
                 }
                 else
                 {
-                    return "El postulante debe estar registrado Previamente...";
                     try
                     {
+                        return "El postulante debe estar registrado Previamente...";
                         if (numero[0] != clave)
                         {
                             return "La clave debe ser igual al nro de DNI";
@@ -234,6 +234,7 @@ public class HomeController : Controller
             var form = await Request.ReadFormAsync();
             var chunk = form.Files.GetFile("chunk");
             String cadena = form["cadena"].ToString() ?? "";
+            String trazaFiles = form["trazaFiles"].ToString() ?? "";
             var nombreCarpeta = form["nombreCarpeta"].ToString() ?? "";
             var nombreArchivo = form["nombreArchivo"].ToString() ?? "";
             int viajeActual = 0;
@@ -250,6 +251,20 @@ public class HomeController : Controller
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error sp al guardar la data...");
+                    rpta = "error";
+                }
+            }
+
+            if (trazaFiles != "")
+            {
+                try
+                {
+                    daSQL odaSQL = new daSQL(_configuration, "Cnx");
+                    rpta = odaSQL.ejecutarComando("dbo.usp_insertDocPostula", "@data", trazaFiles);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error sp al guardar la trazaFiles...");
                     rpta = "error";
                 }
             }
