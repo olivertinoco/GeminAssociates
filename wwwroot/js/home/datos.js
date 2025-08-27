@@ -496,7 +496,7 @@ function getValue(el) {
 }
 
 function asignarEpps(lsEpp) {
-  if (lsEpp.length) {
+  if (lsEpp[0] !== "¦¦¦") {
     lsEpp.forEach((item) => {
       const [eppSecId, eppSec, eppId, eppTalla] = item.split("¦");
       const elId = document.querySelector(`[data-item="${eppId}D"]`);
